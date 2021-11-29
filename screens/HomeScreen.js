@@ -16,6 +16,7 @@ const HomeScreen = () => {
       })
       .catch((e) => alert(e.message));
   };
+
   return (
     <View style={styles.container}>
       <Text>Email:{auth.currentUser?.email} </Text>

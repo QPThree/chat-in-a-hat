@@ -17,6 +17,7 @@ const HomeScreen = () => {
       })
       .catch((e) => alert(e.message));
   };
+
   return (
     <>
       <View style={styles.header}>

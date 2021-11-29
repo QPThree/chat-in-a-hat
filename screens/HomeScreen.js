@@ -1,6 +1,7 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import Card from '../components/ChatCard'
 
 import { getAuth } from "../firebase";
 
@@ -17,12 +18,24 @@ const HomeScreen = () => {
       .catch((e) => alert(e.message));
   };
   return (
-    <View style={styles.container}>
-      <Text>Email:{auth.currentUser?.email} </Text>
-      <TouchableOpacity style={styles.button} onPress={handleSigOut}>
-        <Text style={styles.buttonText}> Sign Out </Text>
-      </TouchableOpacity>
-    </View>
+    <>
+      <View style={styles.header}>
+        <Text>Email:{auth.currentUser?.email} </Text>
+        <TouchableOpacity style={styles.button} onPress={handleSigOut}>
+          <Text style={styles.buttonText}> Sign Out </Text>
+        </TouchableOpacity>
+
+      </View>
+      <View style={styles.container}>
+        <ScrollView>
+          <Card userName = {auth.currentUser?.email}/>
+          <Card userName = {auth.currentUser?.email}/>
+          <Card userName = {auth.currentUser?.email}/>
+          <Card userName = {auth.currentUser?.email}/>
+          
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
@@ -31,8 +44,14 @@ export default HomeScreen;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    marginHorizontal: 5,
+  },
+  header: {
+    flex: 0.25,
+    justifyContent: "flex-start",
+    padding: 4,
+    borderBottomColor: 'grey',
+    borderBottomWidth: 1,
   },
   buttonText: {
     color: "white",

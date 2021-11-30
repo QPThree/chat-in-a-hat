@@ -14,11 +14,11 @@ import { auth } from "../firebase";
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const handleSigOut = () => {
+  const handleSignOut = () => {
     auth
       .signOut()
       .then(() => {
-        navigation.replace("Login");
+        navigation.navigate("Login");
       })
       .catch((e) => alert(e.message));
   };
@@ -27,7 +27,7 @@ const HomeScreen = () => {
     <>
       <View style={styles.header}>
         <Text>Email:{auth.currentUser?.email} </Text>
-        <TouchableOpacity style={styles.button} onPress={handleSigOut}>
+        <TouchableOpacity style={styles.button} onPress={handleSignOut}>
           <Text style={styles.buttonText}> Sign Out </Text>
         </TouchableOpacity>
       </View>

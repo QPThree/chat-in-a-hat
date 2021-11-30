@@ -3,7 +3,7 @@ import { StyleSheet, Text, View } from "react-native";
 
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { createDrawerNavigator } from '@react-navigation/drawer';
+import { createDrawerNavigator } from "@react-navigation/drawer";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ChatRoom from "./screens/ChatRoom";
@@ -12,12 +12,8 @@ import { auth, onAuthStateChanged } from "./firebase";
 
 import RegisterScreen from "./screens/RegisterScreen";
 
-
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
-
-
-
 
 export default function App() {
 
@@ -53,6 +49,7 @@ export default function App() {
 
           }
         </Drawer.Group>
+
       </Drawer.Navigator>
     </NavigationContainer>
   );

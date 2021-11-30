@@ -7,6 +7,7 @@ import { createDrawerNavigator } from "@react-navigation/drawer";
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ChatRoom from "./screens/ChatRoom";
+import ProfileScreen from "./screens/ProfileScreen";
 
 import { auth, onAuthStateChanged } from "./firebase";
 
@@ -40,6 +41,7 @@ export default function App() {
             <>
               <Drawer.Screen name='Home' component={HomeScreen} />
               <Drawer.Screen name='ChatRoom' component={ChatRoom} />
+              <Drawer.Screen name='Profile' component={ProfileScreen} />
             </>
             :
             <>

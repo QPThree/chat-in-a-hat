@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
 import React from "react";
+import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
   StyleSheet,
@@ -14,23 +14,10 @@ import { auth } from "../firebase";
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const handleSignOut = async () => {
-     await auth
-      .signOut()
-      .then(() => {
-        navigation.navigate("Login");
-      })
-      .catch((e) => alert(e.message));
-      console.log("AUTH AFTER SIGN OUT:", auth)
-  };
-
   return (
     <>
       <View style={styles.header}>
         <Text>Email:{auth.currentUser?.email} </Text>
-        <TouchableOpacity style={styles.button} onPress={handleSignOut}>
-          <Text style={styles.buttonText}> Sign Out </Text>
-        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <ScrollView>
@@ -52,7 +39,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   header: {
-    flex: 0.25,
+    flex: 0.1,
     justifyContent: "flex-start",
     padding: 4,
     borderBottomColor: "grey",

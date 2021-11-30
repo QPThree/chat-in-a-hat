@@ -16,7 +16,7 @@ export default function ChatCard({ userName}) {
                 </Text>
                 <Button
                     icon={<Icon name='code' color='#ffffff' />}
-                    onPress={() => navigation.replace("ChatRoom")}
+                    onPress={() => navigation.navigate("ChatRoom")}
                     buttonStyle={{ borderRadius: 0, marginLeft: 0, marginRight: 0, marginBottom: 0 }}
                     title='VIEW NOW' />
 

@@ -14,13 +14,14 @@ import { auth } from "../firebase";
 const HomeScreen = () => {
   const navigation = useNavigation();
 
-  const handleSignOut = () => {
-    auth
+  const handleSignOut = async () => {
+     await auth
       .signOut()
       .then(() => {
         navigation.navigate("Login");
       })
       .catch((e) => alert(e.message));
+      console.log("AUTH AFTER SIGN OUT:", auth)
   };
 
   return (

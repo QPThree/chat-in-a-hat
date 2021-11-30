@@ -11,7 +11,7 @@ import {
 import {
   auth,
   createUserWithEmailAndPassword,
-  onAuthStateChanged,
+  onAuthStateChanged
 } from "../firebase";
 
 const RegisterScreen = () => {
@@ -25,7 +25,7 @@ const RegisterScreen = () => {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        navigation.replace("Home");
+        navigation.navigate("Home");
       }
     });
 

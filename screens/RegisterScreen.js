@@ -1,5 +1,5 @@
+import React, { useState, useEffect } from "react";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
 import {
   KeyboardAvoidingView,
   StyleSheet,
@@ -9,18 +9,18 @@ import {
   View,
 } from "react-native";
 import {
-  app,
   auth,
   createUserWithEmailAndPassword,
-  signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "../firebase";
 
-const LoginScreen = () => {
+const RegisterScreen = () => {
+  const navigation = useNavigation();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
-  const navigation = useNavigation();
+  const [name, setName] = useState("");
+  const [imageURL, setImageURL] = useState("");
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -33,24 +33,18 @@ const LoginScreen = () => {
   }, []);
 
   const handleSignUp = () => {
-    // createUserWithEmailAndPassword(auth, email, password)
-    //   .then((userCredential) => {
-    //     const user = userCredential.user;
-    //     console.log(user.email, "THIS IS THE EMAIL");
-    //   })
-    //   .catch((e) => alert(e.message));
-    navigation.replace("Register");
-  };
-
-  const handleLogin = () => {
-    signInWithEmailAndPassword(auth, email, password)
+    createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user.email, "LOGGED IN USER");
+        let user = userCredential.user;
+        user.updateProfile({
+          displayName: name,
+          photoURL:
+            imageURL ||
+            "https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_640.png",
+        });
       })
       .catch((e) => alert(e.message));
   };
-
   return (
     <KeyboardAvoidingView style={styles.container} behavior='padding'>
       <View style={styles.inputContainer}>
@@ -67,12 +61,21 @@ const LoginScreen = () => {
           style={styles.input}
           secureTextEntry
         />
+        <TextInput
+          placeholder='Username'
+          value={name}
+          onChangeText={setName}
+          style={styles.input}
+        />
+        <TextInput
+          placeholder='Avatar URL'
+          value={imageURL}
+          onChangeText={setImageURL}
+          style={styles.input}
+        />
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={handleLogin} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
-        </TouchableOpacity>
         <TouchableOpacity
           onPress={handleSignUp}
           style={[styles.button, styles.buttonOutline]}
@@ -84,7 +87,7 @@ const LoginScreen = () => {
   );
 };
 
-export default LoginScreen;
+export default RegisterScreen;
 
 const styles = StyleSheet.create({
   container: {
@@ -124,11 +127,6 @@ const styles = StyleSheet.create({
   },
   buttonOutlineText: {
     color: "powderblue",
-    fontWeight: "700",
-    fontSize: 16,
-  },
-  buttonText: {
-    color: "white",
     fontWeight: "700",
     fontSize: 16,
   },

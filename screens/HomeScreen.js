@@ -9,11 +9,17 @@ import {
 } from "react-native";
 import Card from "../components/ChatCard";
 
-import { auth, db } from "../firebase";
+
+import { auth, db, collection, query, getDocs } from "../firebase";
+
 
 const HomeScreen = () => {
   const navigation = useNavigation();
 
+  const roomsRef = query(collection(db, 'rooms'), )
+  const querySnapshot = getDocs(roomsRef);
+  console.log("GET DOCS: ", querySnapshot);
+ 
   return (
     <>
       <View style={styles.header}>
@@ -21,7 +27,7 @@ const HomeScreen = () => {
       </View>
       <View style={styles.container}>
         <ScrollView>
-          <Card userName={auth.currentUser?.email} />
+          <Card userName={auth.currentUser?.email} collection={"sports"} />
           <Card userName={auth.currentUser?.email} />
           <Card userName={auth.currentUser?.email} />
           <Card userName={auth.currentUser?.email} />

@@ -8,6 +8,7 @@ import {
   doc,
   query,
   orderBy,
+  getDocs
 } from "firebase/firestore";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -54,4 +55,5 @@ module.exports = {
   onSnapshot,
   query,
   orderBy,
+  getDocs
 };

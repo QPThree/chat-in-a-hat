@@ -10,14 +10,13 @@ import {
 } from "react-native";
 import {
   app,
-  getAuth,
+  auth,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from "../firebase";
 
 const LoginScreen = () => {
-  const auth = getAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -34,12 +33,13 @@ const LoginScreen = () => {
   }, []);
 
   const handleSignUp = () => {
-    createUserWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        const user = userCredential.user;
-        console.log(user.email, "THIS IS THE EMAIL");
-      })
-      .catch((e) => alert(e.message));
+    // createUserWithEmailAndPassword(auth, email, password)
+    //   .then((userCredential) => {
+    //     const user = userCredential.user;
+    //     console.log(user.email, "THIS IS THE EMAIL");
+    //   })
+    //   .catch((e) => alert(e.message));
+    navigation.replace("Register");
   };
 
   const handleLogin = () => {

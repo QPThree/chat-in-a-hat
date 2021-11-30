@@ -1,12 +1,17 @@
 import { useNavigation } from "@react-navigation/native";
 import React from "react";
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from "react-native";
-import Card from '../components/ChatCard'
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import Card from "../components/ChatCard";
 
-import { getAuth } from "../firebase";
+import { auth } from "../firebase";
 
 const HomeScreen = () => {
-  const auth = getAuth();
   const navigation = useNavigation();
 
   const handleSignOut = () => {
@@ -25,15 +30,13 @@ const HomeScreen = () => {
         <TouchableOpacity style={styles.button} onPress={handleSignOut}>
           <Text style={styles.buttonText}> Sign Out </Text>
         </TouchableOpacity>
-
       </View>
       <View style={styles.container}>
         <ScrollView>
-          <Card userName = {auth.currentUser?.email}/>
-          <Card userName = {auth.currentUser?.email}/>
-          <Card userName = {auth.currentUser?.email}/>
-          <Card userName = {auth.currentUser?.email}/>
-          
+          <Card userName={auth.currentUser?.email} />
+          <Card userName={auth.currentUser?.email} />
+          <Card userName={auth.currentUser?.email} />
+          <Card userName={auth.currentUser?.email} />
         </ScrollView>
       </View>
     </>
@@ -51,7 +54,7 @@ const styles = StyleSheet.create({
     flex: 0.25,
     justifyContent: "flex-start",
     padding: 4,
-    borderBottomColor: 'grey',
+    borderBottomColor: "grey",
     borderBottomWidth: 1,
   },
   buttonText: {

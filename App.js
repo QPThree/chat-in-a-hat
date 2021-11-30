@@ -7,7 +7,11 @@ import { createDrawerNavigator } from '@react-navigation/drawer';
 import LoginScreen from "./screens/LoginScreen";
 import HomeScreen from "./screens/HomeScreen";
 import ChatRoom from "./screens/ChatRoom";
+
 import { getAuth } from "./firebase";
+
+import RegisterScreen from "./screens/RegisterScreen";
+
 
 const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
@@ -17,11 +21,13 @@ export default function App() {
   console.log(auth);
   return (
     <NavigationContainer>
+
       <Drawer.Navigator>
         <Drawer.Screen name="Home" component={HomeScreen} />
         <Drawer.Screen name='ChatRoom' component={ChatRoom} />
         <Drawer.Screen name= "Login" component={LoginScreen} />
       </Drawer.Navigator>
+
     </NavigationContainer>
   );
 }

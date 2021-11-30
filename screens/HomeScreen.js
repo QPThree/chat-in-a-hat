@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import Card from "../components/ChatCard";
 
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
 
 const HomeScreen = () => {
   const navigation = useNavigation();

@@ -29,26 +29,21 @@ const ChatRoom = () => {
   //   ]);
   // }, []);
   useLayoutEffect(() => {
-    const q = query(collection(db, "chats"));
-    const unsubscribe = onSnapshot(
-      q,
-      orderBy("createdAt", "desc"),
-      (querySnapShot) => {
-        querySnapShot.forEach((chat) => {
-          console.log(chat.data());
-          const chats = [];
+    const q = query(collection(db, "chats"), orderBy("createdAt", "desc"));
+    const unsubscribe = onSnapshot(q, (querySnapShot) => {
+      setMessages(
+        querySnapShot.docs.map((chat) => {
+          // console.log(chat.data());
           let doc = {
             _id: chat.data()._id,
             createdAt: chat.data().createdAt.toDate(),
             text: chat.data().text,
             user: chat.data().user,
           };
-          // console.log(doc);
-          chats.push(doc);
-          // setMessages(chats);
-        });
-      }
-    );
+          return doc;
+        })
+      );
+    });
     return unsubscribe;
   }, []);
 

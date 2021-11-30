@@ -14,26 +14,14 @@ import {
 const ChatRoom = () => {
   const [messages, setMessages] = useState([]);
 
-  // useEffect(() => {
-  //   setMessages([
-  //     {
-  //       _id: 1,
-  //       text: "Hello developer",
-  //       createdAt: new Date(),
-  //       user: {
-  //         _id: 2,
-  //         name: "React Native",
-  //         avatar: "https://placeimg.com/140/140/any",
-  //       },
-  //     },
-  //   ]);
-  // }, []);
+
   useLayoutEffect(() => {
     const q = query(collection(db, "chats"), orderBy("createdAt", "desc"));
     const unsubscribe = onSnapshot(q, (querySnapShot) => {
       setMessages(
         querySnapShot.docs.map((chat) => {
           // console.log(chat.data());
+
           let doc = {
             _id: chat.data()._id,
             createdAt: chat.data().createdAt.toDate(),

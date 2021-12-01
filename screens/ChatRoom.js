@@ -9,21 +9,21 @@ import {
   onSnapshot,
   orderBy,
   query,
-  doc
+  doc,
 } from "../firebase";
 
-
-const ChatRoom = () => {
+const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
-
+  console.log("Collection: ", route.params.collection);
 
   useLayoutEffect(() => {
-    const q = query(collection(db, "rooms", "roomA", "messages"), orderBy("createdAt", "desc"));
+    const q = query(
+      collection(db, "rooms", route.params.collection, "messages"),
+      orderBy("createdAt", "desc")
+    );
     const unsubscribe = onSnapshot(q, (querySnapShot) => {
       setMessages(
         querySnapShot.docs.map((chat) => {
-          // console.log(chat.data());
-
           let doc = {
             _id: chat.data()._id,
             createdAt: chat.data().createdAt.toDate(),
@@ -42,7 +42,7 @@ const ChatRoom = () => {
       GiftedChat.append(previousMessages, messages)
     );
     const { _id, createdAt, text, user } = messages[0];
-    addDoc(collection(db, "rooms", "roomA", "messages"), {
+    addDoc(collection(db, "rooms", route.params.collection, "messages"), {
       _id,
       createdAt,
       text,

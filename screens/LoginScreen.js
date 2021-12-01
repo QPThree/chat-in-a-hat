@@ -16,14 +16,12 @@ import {
   onAuthStateChanged,
 } from "../firebase";
 
-
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const navigation = useNavigation();
-  console.log("AUTH BEFORE LOGIN: ", auth)
-
+  console.log("AUTH BEFORE LOGIN: ", auth);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -51,14 +49,13 @@ const LoginScreen = () => {
         const user = userCredential.user;
         console.log(user.email, "LOGGED IN USER");
         console.log("AUTH AFTE LOGIN: ", auth);
-        navigation.navigate("Home")
+        navigation.navigate("Home");
       })
       .catch((e) => alert(e.message));
   };
 
   return (
     <>
-    
       <KeyboardAvoidingView style={styles.container} behavior='padding'>
         {/* {auth.currentUser ?
         <View style={styles.buttonContainer}>

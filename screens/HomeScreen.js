@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigation } from "@react-navigation/native";
 import {
   ScrollView,
@@ -6,31 +6,69 @@ import {
   Text,
   TouchableOpacity,
   View,
+  TextInput,
 } from "react-native";
 import Card from "../components/ChatCard";
 
-
-import { auth, db, collection, query, getDocs } from "../firebase";
-
+import { auth, db, collection, query, getDocs, setDoc, doc } from "../firebase";
+import { addDoc } from "@firebase/firestore";
 
 const HomeScreen = () => {
+  const [rooms, setRooms] = useState([]);
+  const [chatName, setChatName] = useState("");
   const navigation = useNavigation();
+  console.log(auth.currentUser);
 
-  const roomsRef = query(collection(db, 'rooms'), )
-  const querySnapshot = getDocs(roomsRef);
-  console.log("GET DOCS: ", querySnapshot);
- 
+  useEffect(() => {
+    const roomsRef = query(collection(db, "rooms"));
+    const fetchCollections = async () => {
+      const querySnapShot = await getDocs(roomsRef);
+
+      setRooms(
+        querySnapShot.docs.map((doc) => {
+          return doc.id;
+        })
+      );
+    };
+    fetchCollections();
+    // getDoc(roomsRef).then((querySnapShot) => {
+    //   console.log("THIS IS THE QUERY DATA: ", querySnapShot.data());
+    // });
+  }, []);
+
+  const handleCreateChat = async () => {
+    try {
+      await setDoc(doc(db, "rooms", chatName), {
+        users: [auth.currentUser?.email],
+      });
+      setRooms([...rooms, chatName]);
+      setChatName("");
+      navigation.navigate("ChatRoom", { collection: chatName });
+    } catch (e) {
+      console.log(e.message);
+    }
+  };
+
   return (
     <>
       <View style={styles.header}>
-        <Text>Email:{auth.currentUser?.email} </Text>
+        <View style={styles.inputContainer}>
+          <TextInput
+            placeholder='Chat Name'
+            value={chatName}
+            onChangeText={setChatName}
+            style={styles.input}
+          />
+        </View>
+        <TouchableOpacity onPress={handleCreateChat} style={styles.button}>
+          <Text style={styles.buttonText}>Login</Text>
+        </TouchableOpacity>
       </View>
       <View style={styles.container}>
         <ScrollView>
-          <Card userName={auth.currentUser?.email} collection={"sports"} />
-          <Card userName={auth.currentUser?.email} />
-          <Card userName={auth.currentUser?.email} />
-          <Card userName={auth.currentUser?.email} />
+          {rooms.map((id) => (
+            <Card key={id} userName={auth.currentUser?.email} collection={id} />
+          ))}
         </ScrollView>
       </View>
     </>
@@ -45,7 +83,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   header: {
-    flex: 0.1,
+    flex: 0.5,
     justifyContent: "flex-start",
     padding: 4,
     borderBottomColor: "grey",

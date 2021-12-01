@@ -9,13 +9,19 @@ import {
   TextInput,
 } from "react-native";
 import Card from "../components/ChatCard";
+import CreateChatRoomModal from '../components/CreateChatRoomModal'
 
 import { auth, db, collection, query, getDocs, setDoc, doc } from "../firebase";
 import { addDoc } from "@firebase/firestore";
 
+
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
   const [chatName, setChatName] = useState("");
+  const [displayModal, setDisplayModal] = useState(false);
+  const [isPublic, setIsPublic] = useState(true);
+  const [description, setDescription] = useState('');
+
   const navigation = useNavigation();
   console.log(auth.currentUser);
 
@@ -26,22 +32,29 @@ const HomeScreen = () => {
 
       setRooms(
         querySnapShot.docs.map((doc) => {
-          return doc.id;
+          let obj ={
+            description: doc.data().description,
+            id: doc.id,
+          }
+          return obj;
         })
       );
+      
     };
     fetchCollections();
-    // getDoc(roomsRef).then((querySnapShot) => {
-    //   console.log("THIS IS THE QUERY DATA: ", querySnapShot.data());
-    // });
+    console.log("ROOMS:", rooms)
+    
+   
   }, []);
 
   const handleCreateChat = async () => {
     try {
       await setDoc(doc(db, "rooms", chatName), {
         users: [auth.currentUser?.email],
+        public: isPublic,
+        description: description,
       });
-      setRooms([...rooms, chatName]);
+      setRooms([...rooms, {description: description}]);
       setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });
     } catch (e) {
@@ -49,25 +62,36 @@ const HomeScreen = () => {
     }
   };
 
+  const handleShowModal = () => {
+    setDisplayModal(true)
+  }
+
   return (
     <>
       <View style={styles.header}>
         <View style={styles.inputContainer}>
-          <TextInput
-            placeholder='Chat Name'
-            value={chatName}
-            onChangeText={setChatName}
-            style={styles.input}
-          />
-        </View>
-        <TouchableOpacity onPress={handleCreateChat} style={styles.button}>
-          <Text style={styles.buttonText}>Login</Text>
+          
+       
+        <TouchableOpacity onPress={handleShowModal} style={styles.button}>
+          <Text style={styles.buttonText}>Create Room</Text>
         </TouchableOpacity>
+        {displayModal && 
+          <CreateChatRoomModal 
+            displayModal={displayModal}
+            setDisplayModal={setDisplayModal}
+            handleShowModal={handleShowModal}
+            chatName={chatName}
+            setChatName={setChatName} 
+            setDescription={setDescription}
+            setIsPublic={setIsPublic}
+            handleCreateChat={handleCreateChat}/>
+        }
+        </View>
       </View>
       <View style={styles.container}>
         <ScrollView>
-          {rooms.map((id) => (
-            <Card key={id} userName={auth.currentUser?.email} collection={id} />
+          {rooms.map((obj) => (
+            <Card key={obj.id} userName={auth.currentUser?.email} collection={obj.id} description={obj.description} />
           ))}
         </ScrollView>
       </View>
@@ -83,7 +107,7 @@ const styles = StyleSheet.create({
     marginHorizontal: 5,
   },
   header: {
-    flex: 0.5,
+    flex: 0.3,
     justifyContent: "flex-start",
     padding: 4,
     borderBottomColor: "grey",

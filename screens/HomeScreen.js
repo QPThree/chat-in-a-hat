@@ -10,17 +10,29 @@ import {
 } from "react-native";
 import Card from "../components/ChatCard";
 
-import { auth, db, collection, query, getDocs, setDoc, doc } from "../firebase";
-import { addDoc } from "@firebase/firestore";
+import {
+  auth,
+  db,
+  collection,
+  query,
+  getDocs,
+  setDoc,
+  doc,
+  where,
+  orderBy,
+} from "../firebase";
+import { setStatusBarBackgroundColor } from "expo-status-bar";
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
   const [chatName, setChatName] = useState("");
   const navigation = useNavigation();
-  console.log(auth.currentUser);
 
   useEffect(() => {
-    const roomsRef = query(collection(db, "rooms"));
+    const roomsRef = query(
+      collection(db, "rooms"),
+      where("users", "array-contains", auth.currentUser?.email)
+    );
     const fetchCollections = async () => {
       const querySnapShot = await getDocs(roomsRef);
 
@@ -31,17 +43,15 @@ const HomeScreen = () => {
       );
     };
     fetchCollections();
-    // getDoc(roomsRef).then((querySnapShot) => {
-    //   console.log("THIS IS THE QUERY DATA: ", querySnapShot.data());
-    // });
   }, []);
 
   const handleCreateChat = async () => {
     try {
       await setDoc(doc(db, "rooms", chatName), {
         users: [auth.currentUser?.email],
+        createdAt: new Date(),
       });
-      setRooms([...rooms, chatName]);
+      setRooms([chatName, ...rooms]);
       setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });
     } catch (e) {

@@ -19,9 +19,7 @@ import {
 const LoginScreen = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-
   const navigation = useNavigation();
-  console.log("AUTH BEFORE LOGIN: ", auth);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -34,12 +32,6 @@ const LoginScreen = () => {
   }, []);
 
   const handleSignUp = () => {
-    // createUserWithEmailAndPassword(auth, email, password)
-    //   .then((userCredential) => {
-    //     const user = userCredential.user;
-    //     console.log(user.email, "THIS IS THE EMAIL");
-    //   })
-    //   .catch((e) => alert(e.message));
     navigation.navigate("Register");
   };
 
@@ -57,13 +49,6 @@ const LoginScreen = () => {
   return (
     <>
       <KeyboardAvoidingView style={styles.container} behavior='padding'>
-        {/* {auth.currentUser ?
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity onPress={handleLogin} style={styles.button}>
-            <Text style={styles.buttonText}>Logout</Text>
-          </TouchableOpacity>
-        </View>
-        : */}
         <>
           <View style={styles.inputContainer}>
             <TextInput
@@ -93,7 +78,6 @@ const LoginScreen = () => {
             </TouchableOpacity>
           </View>
         </>
-        {/* } */}
       </KeyboardAvoidingView>
     </>
   );

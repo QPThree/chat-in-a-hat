@@ -17,41 +17,36 @@ const Stack = createNativeStackNavigator();
 const Drawer = createDrawerNavigator();
 
 export default function App() {
-
   const [isSignedIn, setIsSignedIn] = useState(false);
-  console.log("AUTH:", auth)
-  console.log(auth.currentUser)
 
-  useEffect( () => {
+  useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
-      if (user){
+      if (user) {
         setIsSignedIn(true);
-      } else{
-        setIsSignedIn(false)
+      } else {
+        setIsSignedIn(false);
       }
-    } )
-    return unsubscribe
-  }, [])
+    });
+    return unsubscribe;
+  }, []);
 
   return (
     <NavigationContainer>
       <Drawer.Navigator>
         <Drawer.Group>
-          {isSignedIn ?
+          {isSignedIn ? (
             <>
               <Drawer.Screen name='Home' component={HomeScreen} />
               <Drawer.Screen name='ChatRoom' component={ChatRoom} />
               <Drawer.Screen name='Profile' component={ProfileScreen} />
             </>
-            :
+          ) : (
             <>
               <Drawer.Screen name='Login' component={LoginScreen} />
               <Drawer.Screen name='Register' component={RegisterScreen} />
             </>
-
-          }
+          )}
         </Drawer.Group>
-
       </Drawer.Navigator>
     </NavigationContainer>
   );

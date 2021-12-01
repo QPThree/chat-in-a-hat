@@ -9,17 +9,17 @@ import {
 } from "react-native";
 import { Card, ListItem, Button, Icon } from "react-native-elements";
 
-export default function ChatCard({ userName, collection }) {
+export default function ChatCard({ userName, collection, description }) {
   const navigation = useNavigation();
   return (
     <View>
       <Card>
-        <Card.Title>ROOM TITLE</Card.Title>
+        <Card.Title>{collection}</Card.Title>
         <Card.Divider />
 
         <Text style={{ marginBottom: 10 }}>
-          Description of chat room. Name will be passed as prop into room:{" "}
-          {userName} CHAT ROOM NAME: {collection}
+          {description}
+          
         </Text>
         <Button
           icon={<Icon name='code' color='#ffffff' />}

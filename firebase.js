@@ -25,12 +25,12 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAOPwRv0HbK7uJSrBxVl2v0Om1LRZFp1f4",
-  authDomain: "chat-in-a-hat-93c17.firebaseapp.com",
-  projectId: "chat-in-a-hat-93c17",
-  storageBucket: "chat-in-a-hat-93c17.appspot.com",
-  messagingSenderId: "873053449560",
-  appId: "1:873053449560:web:8eb110aab2cf28dfb1492d",
+  apiKey: "AIzaSyD6m8xOo0vP3wTTKDtQmco-aFkJpSw7kWo",
+  authDomain: "chat-in-a-hat-83436.firebaseapp.com",
+  projectId: "chat-in-a-hat-83436",
+  storageBucket: "chat-in-a-hat-83436.appspot.com",
+  messagingSenderId: "157078248483",
+  appId: "1:157078248483:web:2acb87a6d950f873566596"
 };
 
 // Initialize Firebase

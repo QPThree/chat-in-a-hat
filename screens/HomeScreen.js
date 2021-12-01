@@ -13,6 +13,7 @@ import CreateChatRoomModal from '../components/CreateChatRoomModal'
 
 import { auth, db, collection, query, getDocs, setDoc, doc } from "../firebase";
 import { addDoc } from "@firebase/firestore";
+import { FloatingMenu } from 'react-native-floating-action-menu';
 
 
 const HomeScreen = () => {
@@ -21,6 +22,10 @@ const HomeScreen = () => {
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState('');
+  const [displayMenu, setDisplayMenu] = useState(false);
+  const menuItems = [
+    { label: 'New Room', onPress: () =>handleShowModal() },
+  {label: "Private Chats", onPress: ()=> console.log("Show private chat rooms")}];
 
   const navigation = useNavigation();
   console.log(auth.currentUser);
@@ -32,19 +37,17 @@ const HomeScreen = () => {
 
       setRooms(
         querySnapShot.docs.map((doc) => {
-          let obj ={
+          let obj = {
             description: doc.data().description,
             id: doc.id,
           }
           return obj;
         })
       );
-      
+
     };
     fetchCollections();
-    console.log("ROOMS:", rooms)
-    
-   
+
   }, []);
 
   const handleCreateChat = async () => {
@@ -54,7 +57,7 @@ const HomeScreen = () => {
         public: isPublic,
         description: description,
       });
-      setRooms([...rooms, {description: description}]);
+      setRooms([...rooms, { description: description }]);
       setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });
     } catch (e) {
@@ -64,28 +67,36 @@ const HomeScreen = () => {
 
   const handleShowModal = () => {
     setDisplayModal(true)
+    setDisplayMenu(false)
   }
+
 
   return (
     <>
-      <View style={styles.header}>
-        <View style={styles.inputContainer}>
+    {/* from https://www.npmjs.com/package/react-native-floating-action-menu */}
+     <FloatingMenu
+          items={menuItems}
+          isOpen={displayMenu}
+          onMenuToggle={()=> setDisplayMenu(!displayMenu)}
+          onItemPress={(item) => item.onPress}
+          position="bottom-left"
+          primaryColor="#403d39"
           
+        />
+      <View>
        
-        <TouchableOpacity onPress={handleShowModal} style={styles.button}>
-          <Text style={styles.buttonText}>Create Room</Text>
-        </TouchableOpacity>
-        {displayModal && 
-          <CreateChatRoomModal 
-            displayModal={displayModal}
-            setDisplayModal={setDisplayModal}
-            handleShowModal={handleShowModal}
-            chatName={chatName}
-            setChatName={setChatName} 
-            setDescription={setDescription}
-            setIsPublic={setIsPublic}
-            handleCreateChat={handleCreateChat}/>
-        }
+        <View style={styles.inputContainer}>
+          {displayModal &&
+            <CreateChatRoomModal
+              displayModal={displayModal}
+              setDisplayModal={setDisplayModal}
+              handleShowModal={handleShowModal}
+              chatName={chatName}
+              setChatName={setChatName}
+              setDescription={setDescription}
+              setIsPublic={setIsPublic}
+              handleCreateChat={handleCreateChat} />
+          }
         </View>
       </View>
       <View style={styles.container}>
@@ -105,13 +116,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     marginHorizontal: 5,
-  },
-  header: {
-    flex: 0.3,
-    justifyContent: "flex-start",
-    padding: 4,
-    borderBottomColor: "grey",
-    borderBottomWidth: 1,
   },
   buttonText: {
     color: "white",

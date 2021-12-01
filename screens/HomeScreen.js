@@ -29,18 +29,24 @@ const HomeScreen = () => {
   const navigation = useNavigation();
 
   useEffect(() => {
-    const roomsRef = query(
+    const privateChats = query(
       collection(db, "rooms"),
-      where("users", "array-contains", auth.currentUser?.email)
+      where("users", "array-contains", auth.currentUser?.email),
+      where("public", "!=", true)
+    );
+    const publicChats = query(
+      collection(db, "rooms"),
+      where("public", "==", true)
     );
     const fetchCollections = async () => {
-      const querySnapShot = await getDocs(roomsRef);
+      const queryPrivate = await getDocs(privateChats);
+      const queryPublic = await getDocs(publicChats);
 
-      setRooms(
-        querySnapShot.docs.map((doc) => {
-          return doc.id;
-        })
-      );
+      const privateRooms = queryPrivate.docs.map((doc) => doc.id);
+
+      const publicRooms = queryPublic.docs.map((doc) => doc.id);
+      setRooms([...privateRooms, ...publicRooms]);
+      console.log(rooms);
     };
     fetchCollections();
   }, []);

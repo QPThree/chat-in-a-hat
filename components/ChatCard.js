@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { Card, ListItem, Button, Icon } from "react-native-elements";
 
-export default function ChatCard({ userName }) {
+export default function ChatCard({ userName, collection }) {
   const navigation = useNavigation();
   return (
     <View>
@@ -19,11 +19,13 @@ export default function ChatCard({ userName }) {
 
         <Text style={{ marginBottom: 10 }}>
           Description of chat room. Name will be passed as prop into room:{" "}
-          {userName}
+          {userName} CHAT ROOM NAME: {collection}
         </Text>
         <Button
           icon={<Icon name='code' color='#ffffff' />}
-          onPress={() => navigation.navigate("ChatRoom")}
+          onPress={() =>
+            navigation.navigate("ChatRoom", { collection: collection })
+          }
           buttonStyle={{
             borderRadius: 0,
             marginLeft: 0,

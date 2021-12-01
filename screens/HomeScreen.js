@@ -11,9 +11,23 @@ import {
 import Card from "../components/ChatCard";
 import CreateChatRoomModal from '../components/CreateChatRoomModal'
 
-import { auth, db, collection, query, getDocs, setDoc, doc } from "../firebase";
-import { addDoc } from "@firebase/firestore";
+
+
 import { FloatingMenu } from 'react-native-floating-action-menu';
+
+
+import {
+  auth,
+  db,
+  collection,
+  query,
+  getDocs,
+  setDoc,
+  doc,
+  where,
+  orderBy,
+} from "../firebase";
+import { setStatusBarBackgroundColor } from "expo-status-bar";
 
 
 const HomeScreen = () => {
@@ -28,10 +42,12 @@ const HomeScreen = () => {
   {label: "Private Chats", onPress: ()=> console.log("Show private chat rooms")}];
 
   const navigation = useNavigation();
-  console.log(auth.currentUser);
 
   useEffect(() => {
-    const roomsRef = query(collection(db, "rooms"));
+    const roomsRef = query(
+      collection(db, "rooms"),
+      where("users", "array-contains", auth.currentUser?.email)
+    );
     const fetchCollections = async () => {
       const querySnapShot = await getDocs(roomsRef);
 
@@ -56,8 +72,10 @@ const HomeScreen = () => {
         users: [auth.currentUser?.email],
         public: isPublic,
         description: description,
+        createdAt: new Date(),
       });
       setRooms([...rooms, { description: description }]);
+
       setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });
     } catch (e) {

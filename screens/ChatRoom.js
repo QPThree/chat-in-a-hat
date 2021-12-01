@@ -14,7 +14,6 @@ import {
 
 const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
-  console.log("Collection: ", route.params.collection);
 
   useLayoutEffect(() => {
     const q = query(

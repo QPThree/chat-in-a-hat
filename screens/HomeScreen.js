@@ -9,6 +9,9 @@ import {
   TextInput,
 } from "react-native";
 import Card from "../components/ChatCard";
+
+
+
 import CreateChatRoomModal from '../components/CreateChatRoomModal'
 
 import { FloatingMenu } from 'react-native-floating-action-menu';
@@ -24,50 +27,63 @@ import {
   updateDoc,
   where,
   orderBy,
+  collectionGroup,
 } from "../firebase";
 import { setStatusBarBackgroundColor } from "expo-status-bar";
 import InviteFriendsModal from "../components/InviteFriendsModal";
 import { arrayUnion } from "@firebase/firestore";
-
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
   const [chatName, setChatName] = useState("");
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
-  const [description, setDescription] = useState('');
+  const [description, setDescription] = useState("");
   const [displayMenu, setDisplayMenu] = useState(false);
   const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
   const [emailToInvite, setEmailToInvite] = useState('')
   const [roomToInviteTo, setRoomToInviteTo] = useState('')
   const menuItems = [
+
     { label: 'New Room', onPress: () => handleShowModal() },
     { label: "Private Chats", onPress: () => console.log("Show private chat rooms") }];
 
   const navigation = useNavigation();
 
   useEffect(() => {
-    const roomsRef = query(
+    const privateChats = query(
       collection(db, "rooms"),
+      where("public", "==", "False"),
       where("users", "array-contains", auth.currentUser?.email)
     );
+    const publicChats = query(
+      collection(db, "rooms"),
+      where("public", "==", true)
+    );
     const fetchCollections = async () => {
-      const querySnapShot = await getDocs(roomsRef);
+      const queryPrivate = await getDocs(privateChats);
+      const queryPublic = await getDocs(publicChats);
 
-      setRooms(
-        querySnapShot.docs.map((doc) => {
-          console.log(doc.data())
-          let obj = {
-            description: doc.data().description,
-            isPublic: doc.data().public,
-            id: doc.id,
-          }
-          return obj;
-        })
-      );
+      const privateRooms = queryPrivate.docs.map((doc) => {
+        let obj = {
+          description: doc.data().description,
+          id: doc.id,
+        };
+        return obj;
+      });
+
+      const publicRooms = queryPublic.docs.map((doc) => {
+        let obj = {
+          description: doc.data().description,
+          id: doc.id,
+        };
+        return obj;
+      });
+
+      setRooms([...privateRooms, ...publicRooms]);
+
     };
     fetchCollections();
-
   }, []);
 
   const handleCreateChat = async () => {
@@ -78,6 +94,7 @@ const HomeScreen = () => {
         description: description,
         createdAt: new Date(),
       });
+
       setRooms([...rooms, { collection:chatName, description: description, id: chatName }]);
 
       navigation.navigate("ChatRoom", { collection: chatName });
@@ -127,14 +144,13 @@ const HomeScreen = () => {
         isOpen={displayMenu}
         onMenuToggle={() => setDisplayMenu(!displayMenu)}
         onItemPress={(item) => item.onPress}
-        position="bottom-left"
-        primaryColor="#403d39"
-
+        position='bottom-left'
+        primaryColor='#403d39'
       />
       <View>
 
         <View style={styles.inputContainer}>
-          {displayModal &&
+          {displayModal && (
             <CreateChatRoomModal
               displayModal={displayModal}
               setDisplayModal={setDisplayModal}
@@ -143,6 +159,7 @@ const HomeScreen = () => {
               setChatName={setChatName}
               setDescription={setDescription}
               setIsPublic={setIsPublic}
+
               handleCreateChat={handleCreateChat} />
           }
           {displayInviteFriendsModal &&

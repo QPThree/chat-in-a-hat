@@ -11,7 +11,8 @@ import {
 import {
   auth,
   createUserWithEmailAndPassword,
-  onAuthStateChanged
+  onAuthStateChanged,
+  updateProfile,
 } from "../firebase";
 
 const RegisterScreen = () => {
@@ -35,8 +36,7 @@ const RegisterScreen = () => {
   const handleSignUp = () => {
     createUserWithEmailAndPassword(auth, email, password)
       .then((userCredential) => {
-        let user = userCredential.user;
-        user.updateProfile({
+        updateProfile(userCredential.user, {
           displayName: name,
           photoURL:
             imageURL ||

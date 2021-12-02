@@ -1,10 +1,11 @@
 import React from "react";
 import { useNavigation } from "@react-navigation/native";
-import { StyleSheet, Text, View, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, View, TouchableOpacity, Image } from "react-native";
 import { auth } from "../firebase";
 
 export default function ProfileScreen() {
   const navigation = useNavigation();
+  console.log(auth.currentUser);
 
   const handleSignOut = () => {
     auth
@@ -18,7 +19,13 @@ export default function ProfileScreen() {
   return (
     <View style={styles.container}>
       <View style={styles.header}>
+        <Image
+          style={{ width: 50, height: 50 }}
+          source={{ uri: auth.currentUser?.photoURL }}
+        />
         <Text>Email:{auth.currentUser?.email} </Text>
+        <Text>Name:{auth.currentUser?.displayName} </Text>
+        {/* <Text>Avatar:{auth.currentUser?.photoURL} </Text> */}
         <TouchableOpacity style={styles.button} onPress={handleSignOut}>
           <Text style={styles.buttonText}> Sign Out </Text>
         </TouchableOpacity>

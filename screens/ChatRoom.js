@@ -9,13 +9,13 @@ import {
   onSnapshot,
   orderBy,
   query,
-  doc,
 } from "../firebase";
 
 const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
 
   useLayoutEffect(() => {
+    setMessages([]);
     const q = query(
       collection(db, "rooms", route.params.collection, "messages"),
       orderBy("createdAt", "desc")
@@ -34,7 +34,7 @@ const ChatRoom = ({ route }) => {
       );
     });
     return unsubscribe;
-  }, []);
+  }, [route.params.collection]);
 
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
@@ -49,15 +49,20 @@ const ChatRoom = ({ route }) => {
     });
   }, []);
 
+  // if (messages.length < 1) {
+  //   return <Text>LOADING</Text>;
+  // }
+
   return (
     <GiftedChat
       messages={messages}
       showAvatarForEveryMessage={true}
+      renderUsernameOnMessage={true}
       onSend={(messages) => onSend(messages)}
       user={{
         _id: auth?.currentUser?.email,
-        name: auth?.currentUser?.name || "mark",
-        avatar: auth?.currentUser?.photoURL || "fake",
+        name: auth?.currentUser?.displayName,
+        avatar: auth?.currentUser?.photoURL,
       }}
     />
   );

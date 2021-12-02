@@ -21,6 +21,7 @@ import {
   signInWithEmailAndPassword,
   onAuthStateChanged,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 
 // Your web app's Firebase configuration
@@ -62,4 +63,5 @@ module.exports = {
   getDoc,
   setDoc,
   where,
+  updateProfile,
 };

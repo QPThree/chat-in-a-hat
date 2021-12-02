@@ -35,6 +35,8 @@ import { arrayUnion } from "@firebase/firestore";
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
+  const [allRooms, setAllRooms] = useState([])
+  const [privateRooms, setPrivateRooms] = useState([])
   const [chatName, setChatName] = useState("");
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
@@ -46,7 +48,8 @@ const HomeScreen = () => {
   const menuItems = [
 
     { label: 'New Room', onPress: () => handleShowModal() },
-    { label: "Private Chats", onPress: () => console.log("Show private chat rooms") }];
+    { label: "Private Chats", onPress: () => displayPrivateRooms() },
+    { label: "All Chats", onPress: () => displayAllRooms() },];
 
   const navigation = useNavigation();
 
@@ -68,6 +71,7 @@ const HomeScreen = () => {
         let obj = {
           description: doc.data().description,
           id: doc.id,
+          isPublic: false,
         };
         return obj;
       });
@@ -76,15 +80,20 @@ const HomeScreen = () => {
         let obj = {
           description: doc.data().description,
           id: doc.id,
+          isPublic: true,
         };
         return obj;
       });
-
+      
       setRooms([...privateRooms, ...publicRooms]);
+      setAllRooms([...privateRooms, ...publicRooms])
+      setPrivateRooms(privateRooms)
 
     };
     fetchCollections();
   }, []);
+
+
 
   const handleCreateChat = async () => {
     try {
@@ -95,7 +104,7 @@ const HomeScreen = () => {
         createdAt: new Date(),
       });
 
-      setRooms([...rooms, { collection:chatName, description: description, id: chatName }]);
+      setRooms([...rooms, { isPublic: isPublic, collection:chatName, description: description, id: chatName }]);
 
       navigation.navigate("ChatRoom", { collection: chatName });
       setChatName("");
@@ -135,6 +144,15 @@ const HomeScreen = () => {
     }
   }
 
+  const displayPrivateRooms = async() => {
+    setRooms(privateRooms)
+    setDisplayMenu(false)
+  }
+  const displayAllRooms = async() => {
+    setRooms(allRooms)
+    setDisplayMenu(false)
+  }
+
 
   return (
     <>
@@ -159,8 +177,8 @@ const HomeScreen = () => {
               setChatName={setChatName}
               setDescription={setDescription}
               setIsPublic={setIsPublic}
-
               handleCreateChat={handleCreateChat} />
+          )
           }
           {displayInviteFriendsModal &&
             <InviteFriendsModal

@@ -13,20 +13,23 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 
 export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal }) {
   const navigation = useNavigation();
+  console.log(isPublic)
 
- 
   return (
     <View>
       <Card>
-        <Card.Title>{collection} {isPublic == "true"? "":
-          <Icon.Button 
-            name="plus"
-            backgroundColor="#FFF"
-            color="green"
-            onPress={() => {console.log("collection before invite:", collection);handleShowInviteFriendsModal(collection)}}
-            size={12}
+        <Card.Title >{collection} {isPublic == true ? "" :
+          
+            <Icon.Button
+              name="plus"
+              backgroundColor="#FFF"
+              color="green"
+              onPress={() => { handleShowInviteFriendsModal(collection) }}
+              size={12}
+
             >
-          </Icon.Button>}
+            </Icon.Button>
+          }
         </Card.Title>
 
         <Card.Divider />

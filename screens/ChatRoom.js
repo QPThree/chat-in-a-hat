@@ -16,7 +16,7 @@ const ChatRoom = ({ route }) => {
 
 
   useLayoutEffect(() => {
-    setMessages([]);
+
 
     const q = query(
       collection(db, "rooms", route.params.collection, "messages"),

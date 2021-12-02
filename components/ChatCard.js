@@ -7,19 +7,32 @@ import {
   TouchableOpacity,
   Touchable,
 } from "react-native";
-import { Card, ListItem, Button, Icon } from "react-native-elements";
+import { Card, ListItem, Button } from "react-native-elements";
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-export default function ChatCard({ userName, collection, description }) {
+
+export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal }) {
   const navigation = useNavigation();
+
+ 
   return (
     <View>
       <Card>
-        <Card.Title>{collection}</Card.Title>
+        <Card.Title>{collection} {isPublic == "true"? "":
+          <Icon.Button 
+            name="plus"
+            backgroundColor="#FFF"
+            color="green"
+            onPress={() => {console.log("collection before invite:", collection);handleShowInviteFriendsModal(collection)}}
+            size={12}
+            >
+          </Icon.Button>}
+        </Card.Title>
+
         <Card.Divider />
 
         <Text style={{ marginBottom: 10 }}>
           {description}
-          
         </Text>
         <Button
           icon={<Icon name='code' color='#ffffff' />}

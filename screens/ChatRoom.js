@@ -1,6 +1,6 @@
 import React, { useLayoutEffect, useState, useCallback } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import { GiftedChat } from "react-native-gifted-chat";
+import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import {
   auth,
   db,
@@ -11,13 +11,28 @@ import {
   query,
 } from "../firebase";
 
+const getColor = (username) => {
+  let sumChars = 0;
+  for (let i = 0; i < username.length; i++) {
+    sumChars += username.charCodeAt(i);
+  }
+
+  const colors = [
+    "#e67e22", // carrot
+    "#2ecc71", // emerald
+    "#3498db", // peter river
+    "#8e44ad", // wisteria
+    "#e74c3c", // alizarin
+    "#1abc9c", // turquoise
+    "#2c3e50", // midnight blue
+  ];
+  return colors[sumChars % colors.length];
+};
+
 const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
 
-
   useLayoutEffect(() => {
-    setMessages([]);
-
     const q = query(
       collection(db, "rooms", route.params.collection, "messages"),
       orderBy("createdAt", "desc")
@@ -55,11 +70,50 @@ const ChatRoom = ({ route }) => {
   //   return <Text>LOADING</Text>;
   // }
 
+  const renderBubble = (props) => {
+    let username = props.currentMessage.user.name;
+    let color = getColor(username ? username : "gray");
+
+    console.log(username);
+    return (
+      <Bubble
+        {...props}
+        userNameStyle={{
+          left: {
+            color: "white",
+          },
+        }}
+        timeTextStyle={{
+          left: {
+            color: "white",
+          },
+        }}
+        textStyle={{
+          right: {
+            color: "white",
+          },
+          left: {
+            color: "white",
+          },
+          username: {
+            color: "black",
+          },
+        }}
+        wrapperStyle={{
+          left: {
+            backgroundColor: color,
+          },
+        }}
+      />
+    );
+  };
+
   return (
     <GiftedChat
       messages={messages}
       showAvatarForEveryMessage={true}
       renderUsernameOnMessage={true}
+      renderBubble={renderBubble}
       onSend={(messages) => onSend(messages)}
       user={{
         _id: auth?.currentUser?.email,
@@ -67,7 +121,6 @@ const ChatRoom = ({ route }) => {
         avatar: auth?.currentUser?.photoURL,
       }}
     />
-
   );
 };
 

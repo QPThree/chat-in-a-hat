@@ -11,7 +11,7 @@ import { Card, ListItem, Button } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal }) {
+export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal, handleAddFavorite }) {
   const navigation = useNavigation();
   console.log(isPublic)
 
@@ -19,17 +19,26 @@ export default function ChatCard({ userName, collection, description, isPublic, 
     <View>
       <Card>
         <Card.Title >{collection} {isPublic == true ? "" :
-          
-            <Icon.Button
-              name="plus"
-              backgroundColor="#FFF"
-              color="green"
-              onPress={() => { handleShowInviteFriendsModal(collection) }}
-              size={12}
 
-            >
-            </Icon.Button>
-          }
+          <Icon.Button
+            name="plus"
+            backgroundColor="#FFF"
+            color="green"
+            onPress={() => { handleShowInviteFriendsModal(collection) }}
+            size={12}
+          >
+          </Icon.Button>
+
+
+        }
+          <Icon.Button
+            name="star"
+            backgroundColor="#FFF"
+            color="gold"
+            onPress={() => { handleAddFavorite(collection) }}
+            size={12}
+          >
+          </Icon.Button>
         </Card.Title>
 
         <Card.Divider />

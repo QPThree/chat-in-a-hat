@@ -37,7 +37,8 @@ const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
   const [allRooms, setAllRooms] = useState([])
   const [privateRooms, setPrivateRooms] = useState([])
-  const [chatName, setChatName] = useState("");
+  const [usersFavorites, setUsersFavorites] = useState([])
+  const [chatName, setChatName] = useState("")
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
@@ -49,7 +50,8 @@ const HomeScreen = () => {
 
     { label: 'New Room', onPress: () => handleShowModal() },
     { label: "Private Chats", onPress: () => displayPrivateRooms() },
-    { label: "All Chats", onPress: () => displayAllRooms() },];
+    { label: "All Chats", onPress: () => displayAllRooms() },
+    { label: "Favorites", onPress: () => displayFavoriteRooms() },];
 
   const navigation = useNavigation();
 
@@ -63,9 +65,15 @@ const HomeScreen = () => {
       collection(db, "rooms"),
       where("public", "==", true)
     );
+    const favoriteChats = query(
+      collection(db, "rooms"),
+      where("favoritedBy", "array-contains", auth.currentUser?.email)
+    );
+
     const fetchCollections = async () => {
       const queryPrivate = await getDocs(privateChats);
       const queryPublic = await getDocs(publicChats);
+      const queryFavorites = await getDocs(publicChats);
 
       const privateRooms = queryPrivate.docs.map((doc) => {
         let obj = {
@@ -84,10 +92,19 @@ const HomeScreen = () => {
         };
         return obj;
       });
-      
+      const favoriteRooms = queryFavorites.docs.map((doc) => {
+        let obj = {
+          description: doc.data().description,
+          id: doc.id,
+          isPublic: true,
+        };
+        return obj;
+      })
+
       setRooms([...privateRooms, ...publicRooms]);
       setAllRooms([...privateRooms, ...publicRooms])
       setPrivateRooms(privateRooms)
+      setUsersFavorites(favoriteRooms)
 
     };
     fetchCollections();
@@ -99,12 +116,13 @@ const HomeScreen = () => {
     try {
       await setDoc(doc(db, "rooms", chatName), {
         users: [auth.currentUser?.email],
+        favoritedBy: [],
         public: isPublic,
         description: description,
         createdAt: new Date(),
       });
 
-      setRooms([...rooms, { isPublic: isPublic, collection:chatName, description: description, id: chatName }]);
+      setRooms([...rooms, { isPublic: isPublic, collection: chatName, description: description, id: chatName }]);
 
       navigation.navigate("ChatRoom", { collection: chatName });
       setChatName("");
@@ -131,9 +149,8 @@ const HomeScreen = () => {
     setDisplayMenu(false)
   }
 
-  const addEmailToPrivateChat = async() => {
+  const addEmailToPrivateChat = async () => {
     try {
-      console.log("room TO INVITE to", roomToInviteTo)
       await updateDoc(doc(db, "rooms", roomToInviteTo), {
         users: arrayUnion(emailToInvite),
       });
@@ -144,12 +161,28 @@ const HomeScreen = () => {
     }
   }
 
-  const displayPrivateRooms = async() => {
+  const handleAddFavorite = async (collection) => {
+    try {
+      await updateDoc(doc(db, "rooms", collection), {
+        favoritedBy: arrayUnion(auth.currentUser?.email),
+      });
+      setEmailToInvite('')
+      setRoomToInviteTo('')
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const displayPrivateRooms = () => {
     setRooms(privateRooms)
     setDisplayMenu(false)
   }
-  const displayAllRooms = async() => {
+  const displayAllRooms = () => {
     setRooms(allRooms)
+    setDisplayMenu(false)
+  }
+  const displayFavoriteRooms = async () => {
+    setRooms(usersFavorites)
     setDisplayMenu(false)
   }
 
@@ -183,10 +216,10 @@ const HomeScreen = () => {
           {displayInviteFriendsModal &&
             <InviteFriendsModal
               displayInviteFriendsModal={displayInviteFriendsModal}
-              setDisplayInviteFriendsModal={setDisplayInviteFriendsModal} 
+              setDisplayInviteFriendsModal={setDisplayInviteFriendsModal}
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
-              handleInviteFriends={handleInviteFriends}/>}
+              handleInviteFriends={handleInviteFriends} />}
         </View>
       </View>
       <View style={styles.container}>
@@ -198,7 +231,8 @@ const HomeScreen = () => {
               collection={obj.id}
               description={obj.description}
               isPublic={obj.isPublic}
-              handleShowInviteFriendsModal={handleShowInviteFriendsModal} />
+              handleShowInviteFriendsModal={handleShowInviteFriendsModal}
+              handleAddFavorite={handleAddFavorite} />
           ))}
         </ScrollView>
       </View>

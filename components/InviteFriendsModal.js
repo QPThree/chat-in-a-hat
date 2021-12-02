@@ -1,53 +1,38 @@
 import React from 'react'
 import { Button, StyleSheet, Text, View, Modal, TextInput, TouchableOpacity, Picker } from 'react-native';
 
-export default function CreateChatRoomModal({ displayModal, setDisplayModal, chatName, setChatName, handleCreateChat, handleShowModal, setIsPublic, setDescription }) {
-
+export default function InviteFriendsModal({displayInviteFriendsModal, setDisplayInviteFriendsModal, emailToInvite, setEmailToInvite, handleInviteFriends}) {
 
     return (
         <>
-            {displayModal &&
+            {displayInviteFriendsModal &&
                 <View style={styles.centeredView}>
                     <Modal
                         animationType="slide"
                         transparent={true}
-                        visible={displayModal}
+                        visible={displayInviteFriendsModal}
                         onRequestClose={() => {
-                            props.setDisplayModal(!displayModal);
+                            props.setDisplayInviteFriendsModal(!displayInviteFriendsModal);
                         }}
                     >
                         <View style={styles.centeredView}>
                             <View style={styles.modalView}>
                                 <View style={styles.inputContainer}>
                                     <TextInput
-                                        placeholder='Room Name'
-                                        value={chatName}
-                                        onChangeText={text => setChatName(text)}
+                                        placeholder='Enter Email'
+                                        value={emailToInvite}
+                                        onChangeText={text => setEmailToInvite(text)}
                                         style={styles.input}
                                     />
-                                    <TextInput
-                                        placeholder="Description.."
-                                        onChangeText={text => setDescription(text)}
-                                        multiline={true}
-                                        underlineColorAndroid='transparent'
-                                        style={styles.input}
-                                    />
-
-                                    <Picker
-                                        style={{ height: 50, width: 150 }}
-                                        onValueChange={(itemValue) => setIsPublic(itemValue)}>
-                                        <Picker.Item label="Public" value="True" />
-                                        <Picker.Item label="Private" value="False" />
-                                    </Picker>
                                 </View>
-                                <Button
-                                    onPress={() => { handleCreateChat(); setDisplayModal(!displayModal) }}
-                                    title="Create"
-                                    color="#17c3b2"
-                                />
                                 <View style={{ marginTop: 10 }}>
+                                <Button
+                                        onPress={() => handleInviteFriends()}
+                                        title="Send"
+                                        color="#17c3b2"
+                                    />
                                     <Button
-                                        onPress={() => setDisplayModal(!displayModal)}
+                                        onPress={() => setDisplayInviteFriendsModal(!displayInviteFriendsModal)}
                                         title="Close"
                                         color="#780000"
                                     />

@@ -14,8 +14,10 @@ import {
 const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
 
+
   useLayoutEffect(() => {
     setMessages([]);
+
     const q = query(
       collection(db, "rooms", route.params.collection, "messages"),
       orderBy("createdAt", "desc")
@@ -65,6 +67,7 @@ const ChatRoom = ({ route }) => {
         avatar: auth?.currentUser?.photoURL,
       }}
     />
+
   );
 };
 

@@ -11,10 +11,7 @@ import {
 import Card from "../components/ChatCard";
 import CreateChatRoomModal from '../components/CreateChatRoomModal'
 
-
-
 import { FloatingMenu } from 'react-native-floating-action-menu';
-
 
 import {
   auth,
@@ -24,10 +21,13 @@ import {
   getDocs,
   setDoc,
   doc,
+  updateDoc,
   where,
   orderBy,
 } from "../firebase";
 import { setStatusBarBackgroundColor } from "expo-status-bar";
+import InviteFriendsModal from "../components/InviteFriendsModal";
+import { arrayUnion } from "@firebase/firestore";
 
 
 const HomeScreen = () => {
@@ -37,9 +37,12 @@ const HomeScreen = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState('');
   const [displayMenu, setDisplayMenu] = useState(false);
+  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
+  const [emailToInvite, setEmailToInvite] = useState('')
+  const [roomToInviteTo, setRoomToInviteTo] = useState('')
   const menuItems = [
-    { label: 'New Room', onPress: () =>handleShowModal() },
-  {label: "Private Chats", onPress: ()=> console.log("Show private chat rooms")}];
+    { label: 'New Room', onPress: () => handleShowModal() },
+    { label: "Private Chats", onPress: () => console.log("Show private chat rooms") }];
 
   const navigation = useNavigation();
 
@@ -53,14 +56,15 @@ const HomeScreen = () => {
 
       setRooms(
         querySnapShot.docs.map((doc) => {
+          console.log(doc.data())
           let obj = {
             description: doc.data().description,
+            isPublic: doc.data().public,
             id: doc.id,
           }
           return obj;
         })
       );
-
     };
     fetchCollections();
 
@@ -74,10 +78,10 @@ const HomeScreen = () => {
         description: description,
         createdAt: new Date(),
       });
-      setRooms([...rooms, { description: description }]);
+      setRooms([...rooms, { collection:chatName, description: description, id: chatName }]);
 
-      setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });
+      setChatName("");
     } catch (e) {
       console.log(e.message);
     }
@@ -88,21 +92,47 @@ const HomeScreen = () => {
     setDisplayMenu(false)
   }
 
+  const handleInviteFriends = () => {
+    setDisplayInviteFriendsModal(false)
+    addEmailToPrivateChat()
+    setEmailToInvite('')
+  }
+  const handleShowInviteFriendsModal = (room) => {
+    console.log(room)
+    setRoomToInviteTo(room)
+    handleInviteFriends()
+    setDisplayInviteFriendsModal(true)
+    setDisplayMenu(false)
+  }
+
+  const addEmailToPrivateChat = async() => {
+    try {
+      console.log("room TO INVITE to", roomToInviteTo)
+      await updateDoc(doc(db, "rooms", roomToInviteTo), {
+        users: arrayUnion(emailToInvite),
+      });
+      setEmailToInvite('')
+      setRoomToInviteTo('')
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
 
   return (
     <>
-    {/* from https://www.npmjs.com/package/react-native-floating-action-menu */}
-     <FloatingMenu
-          items={menuItems}
-          isOpen={displayMenu}
-          onMenuToggle={()=> setDisplayMenu(!displayMenu)}
-          onItemPress={(item) => item.onPress}
-          position="bottom-left"
-          primaryColor="#403d39"
-          
-        />
+      {/* from https://www.npmjs.com/package/react-native-floating-action-menu */}
+      <FloatingMenu
+        items={menuItems}
+        isOpen={displayMenu}
+        onMenuToggle={() => setDisplayMenu(!displayMenu)}
+        onItemPress={(item) => item.onPress}
+        position="bottom-left"
+        primaryColor="#403d39"
+
+      />
       <View>
-       
+
         <View style={styles.inputContainer}>
           {displayModal &&
             <CreateChatRoomModal
@@ -115,12 +145,25 @@ const HomeScreen = () => {
               setIsPublic={setIsPublic}
               handleCreateChat={handleCreateChat} />
           }
+          {displayInviteFriendsModal &&
+            <InviteFriendsModal
+              displayInviteFriendsModal={displayInviteFriendsModal}
+              setDisplayInviteFriendsModal={setDisplayInviteFriendsModal} 
+              emailToInvite={emailToInvite}
+              setEmailToInvite={setEmailToInvite}
+              handleInviteFriends={handleInviteFriends}/>}
         </View>
       </View>
       <View style={styles.container}>
         <ScrollView>
           {rooms.map((obj) => (
-            <Card key={obj.id} userName={auth.currentUser?.email} collection={obj.id} description={obj.description} />
+            <Card
+              key={obj.id}
+              userName={auth.currentUser?.email}
+              collection={obj.id}
+              description={obj.description}
+              isPublic={obj.isPublic}
+              handleShowInviteFriendsModal={handleShowInviteFriendsModal} />
           ))}
         </ScrollView>
       </View>

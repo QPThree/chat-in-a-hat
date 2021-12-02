@@ -15,7 +15,9 @@ import {
 const ChatRoom = ({ route }) => {
   const [messages, setMessages] = useState([]);
 
+
   useLayoutEffect(() => {
+
     const q = query(
       collection(db, "rooms", route.params.collection, "messages"),
       orderBy("createdAt", "desc")
@@ -50,17 +52,21 @@ const ChatRoom = ({ route }) => {
   }, []);
 
   return (
-    <GiftedChat
-      messages={messages}
-      showAvatarForEveryMessage={true}
-      renderUsernameOnMessage={true}
-      onSend={(messages) => onSend(messages)}
-      user={{
-        _id: auth?.currentUser?.email,
-        name: auth?.currentUser?.name || "mark",
-        avatar: auth?.currentUser?.photoURL || "fake",
-      }}
-    />
+    <>
+      <GiftedChat
+        messages={messages}
+        showAvatarForEveryMessage={true}
+        renderUsernameOnMessage={true}
+        onSend={(messages) => onSend(messages)}
+        user={{
+          _id: auth?.currentUser?.email,
+          name: auth?.currentUser?.name || "mark",
+          avatar: auth?.currentUser?.photoURL || "fake",
+        }}
+      />
+    </>
+
+
   );
 };
 

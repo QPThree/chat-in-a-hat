@@ -7,26 +7,25 @@ import {
   TouchableOpacity,
   Touchable,
 } from "react-native";
-import { Card, ListItem, Button } from "react-native-elements";
+import { Card, ListItem, Button, Chip, ButtonGroup } from "react-native-elements";
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal }) {
+export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal, handleAddFavorite }) {
   const navigation = useNavigation();
 
- 
+  const FavoriteButton = () => <Button type="solid" icon={{ name: "star", color: "gold"}} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleAddFavorite(collection) }} />
+  const InviteButton = () => <Button type="solid" icon={{ name: "add", color: "green"}} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleShowInviteFriendsModal(collection) }} />
+
+
+  const buttons = [{element:FavoriteButton}, {element: InviteButton}]
+  const publicRoomButtons=[{element:FavoriteButton},]
   return (
     <View>
       <Card>
-        <Card.Title>{collection} {isPublic == "true"? "":
-          <Icon.Button 
-            name="plus"
-            backgroundColor="#FFF"
-            color="green"
-            onPress={() => {console.log("collection before invite:", collection);handleShowInviteFriendsModal(collection)}}
-            size={12}
-            >
-          </Icon.Button>}
+
+        <Card.Title >
+          <Text styles={styles.title}>{collection}</Text>
         </Card.Title>
 
         <Card.Divider />
@@ -34,7 +33,9 @@ export default function ChatCard({ userName, collection, description, isPublic, 
         <Text style={{ marginBottom: 10 }}>
           {description}
         </Text>
+        <ButtonGroup buttons={isPublic? publicRoomButtons: buttons} />
         <Button
+          raised
           icon={<Icon name='code' color='#ffffff' />}
           onPress={() =>
             navigation.navigate("ChatRoom", { collection: collection })
@@ -47,9 +48,17 @@ export default function ChatCard({ userName, collection, description, isPublic, 
           }}
           title='Enter Chat'
         />
+        
       </Card>
-    </View>
+    </View >
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  title: {
+    marginRight: 20,
+  },
+  cardButton: {
+    marginRight: 10,
+  }
+});

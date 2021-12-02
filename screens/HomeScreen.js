@@ -33,7 +33,10 @@ import { arrayUnion } from "@firebase/firestore";
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
-  const [chatName, setChatName] = useState("");
+  const [allRooms, setAllRooms] = useState([])
+  const [privateRooms, setPrivateRooms] = useState([])
+  const [usersFavorites, setUsersFavorites] = useState([])
+  const [chatName, setChatName] = useState("")
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
@@ -43,12 +46,13 @@ const HomeScreen = () => {
   const [emailToInvite, setEmailToInvite] = useState("");
   const [roomToInviteTo, setRoomToInviteTo] = useState("");
   const menuItems = [
-    { label: "New Room", onPress: () => handleShowModal() },
-    {
-      label: "Private Chats",
-      onPress: () => console.log("Show private chat rooms"),
-    },
-  ];
+
+
+    { label: 'New Room', onPress: () => handleShowModal() },
+    { label: "Private Chats", onPress: () => displayPrivateRooms() },
+    { label: "All Chats", onPress: () => displayAllRooms() },
+    { label: "Favorites", onPress: () => displayFavoriteRooms() },];
+
 
   const navigation = useNavigation();
 
@@ -62,14 +66,21 @@ const HomeScreen = () => {
       collection(db, "rooms"),
       where("public", "==", true)
     );
+    const favoriteChats = query(
+      collection(db, "rooms"),
+      where("favoritedBy", "array-contains", auth.currentUser?.email)
+    );
+
     const fetchCollections = async () => {
       const queryPrivate = await getDocs(privateChats);
       const queryPublic = await getDocs(publicChats);
+      const queryFavorites = await getDocs(publicChats);
 
       const privateRooms = queryPrivate.docs.map((doc) => {
         let obj = {
           description: doc.data().description,
           id: doc.id,
+          isPublic: false,
         };
         return obj;
       });
@@ -78,28 +89,43 @@ const HomeScreen = () => {
         let obj = {
           description: doc.data().description,
           id: doc.id,
+          isPublic: true,
         };
         return obj;
       });
+      const favoriteRooms = queryFavorites.docs.map((doc) => {
+        let obj = {
+          description: doc.data().description,
+          id: doc.id,
+          isPublic: true,
+        };
+        return obj;
+      })
 
       setRooms([...privateRooms, ...publicRooms]);
+      setAllRooms([...privateRooms, ...publicRooms])
+      setPrivateRooms(privateRooms)
+      setUsersFavorites(favoriteRooms)
+
     };
     fetchCollections();
   }, []);
+
+
 
   const handleCreateChat = async () => {
     try {
       await setDoc(doc(db, "rooms", chatName), {
         users: [auth.currentUser?.email],
+        favoritedBy: [],
         public: isPublic,
         description: description,
         createdAt: new Date(),
       });
 
-      setRooms([
-        ...rooms,
-        { collection: chatName, description: description, id: chatName },
-      ]);
+
+      setRooms([...rooms, { isPublic: isPublic, collection: chatName, description: description, id: chatName }]);
+
 
       navigation.navigate("ChatRoom", { collection: chatName });
       setChatName("");
@@ -119,16 +145,17 @@ const HomeScreen = () => {
     setEmailToInvite("");
   };
   const handleShowInviteFriendsModal = (room) => {
-    console.log(room);
-    setRoomToInviteTo(room);
-    handleInviteFriends();
-    setDisplayInviteFriendsModal(true);
-    setDisplayMenu(false);
-  };
+
+    console.log(room)
+    setRoomToInviteTo(room)
+    handleInviteFriends()
+    setDisplayInviteFriendsModal(true)
+    setDisplayMenu(false)
+  }
 
   const addEmailToPrivateChat = async () => {
     try {
-      console.log("room TO INVITE to", roomToInviteTo);
+
       await updateDoc(doc(db, "rooms", roomToInviteTo), {
         users: arrayUnion(emailToInvite),
       });
@@ -137,7 +164,33 @@ const HomeScreen = () => {
     } catch (e) {
       console.log(e.message);
     }
-  };
+
+  }
+  const handleAddFavorite = async (collection) => {
+    try {
+      await updateDoc(doc(db, "rooms", collection), {
+        favoritedBy: arrayUnion(auth.currentUser?.email),
+      });
+      setEmailToInvite('')
+      setRoomToInviteTo('')
+    } catch (e) {
+      console.log(e.message);
+    }
+  }
+
+  const displayPrivateRooms = () => {
+    setRooms(privateRooms)
+    setDisplayMenu(false)
+  }
+  const displayAllRooms = () => {
+    setRooms(allRooms)
+    setDisplayMenu(false)
+  }
+  const displayFavoriteRooms = async () => {
+    setRooms(usersFavorites)
+    setDisplayMenu(false)
+  }
+
 
   return (
     <>
@@ -161,18 +214,20 @@ const HomeScreen = () => {
               setChatName={setChatName}
               setDescription={setDescription}
               setIsPublic={setIsPublic}
-              handleCreateChat={handleCreateChat}
-            />
-          )}
-          {displayInviteFriendsModal && (
+
+              handleCreateChat={handleCreateChat} />
+          )
+          }
+          {displayInviteFriendsModal &&
+
             <InviteFriendsModal
               displayInviteFriendsModal={displayInviteFriendsModal}
               setDisplayInviteFriendsModal={setDisplayInviteFriendsModal}
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
-              handleInviteFriends={handleInviteFriends}
-            />
-          )}
+
+              handleInviteFriends={handleInviteFriends} />}
+
         </View>
       </View>
       <View style={styles.container}>
@@ -185,7 +240,8 @@ const HomeScreen = () => {
               description={obj.description}
               isPublic={obj.isPublic}
               handleShowInviteFriendsModal={handleShowInviteFriendsModal}
-            />
+              handleAddFavorite={handleAddFavorite} />
+
           ))}
         </ScrollView>
       </View>

@@ -10,11 +10,9 @@ import {
 } from "react-native";
 import Card from "../components/ChatCard";
 
+import CreateChatRoomModal from "../components/CreateChatRoomModal";
 
-
-import CreateChatRoomModal from '../components/CreateChatRoomModal'
-
-import { FloatingMenu } from 'react-native-floating-action-menu';
+import { FloatingMenu } from "react-native-floating-action-menu";
 
 import {
   auth,
@@ -43,15 +41,18 @@ const HomeScreen = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
   const [displayMenu, setDisplayMenu] = useState(false);
-  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
-  const [emailToInvite, setEmailToInvite] = useState('')
-  const [roomToInviteTo, setRoomToInviteTo] = useState('')
+  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] =
+    useState(false);
+  const [emailToInvite, setEmailToInvite] = useState("");
+  const [roomToInviteTo, setRoomToInviteTo] = useState("");
   const menuItems = [
+
 
     { label: 'New Room', onPress: () => handleShowModal() },
     { label: "Private Chats", onPress: () => displayPrivateRooms() },
     { label: "All Chats", onPress: () => displayAllRooms() },
     { label: "Favorites", onPress: () => displayFavoriteRooms() },];
+
 
   const navigation = useNavigation();
 
@@ -122,7 +123,9 @@ const HomeScreen = () => {
         createdAt: new Date(),
       });
 
+
       setRooms([...rooms, { isPublic: isPublic, collection: chatName, description: description, id: chatName }]);
+
 
       navigation.navigate("ChatRoom", { collection: chatName });
       setChatName("");
@@ -132,16 +135,17 @@ const HomeScreen = () => {
   };
 
   const handleShowModal = () => {
-    setDisplayModal(true)
-    setDisplayMenu(false)
-  }
+    setDisplayModal(true);
+    setDisplayMenu(false);
+  };
 
   const handleInviteFriends = () => {
-    setDisplayInviteFriendsModal(false)
-    addEmailToPrivateChat()
-    setEmailToInvite('')
-  }
+    setDisplayInviteFriendsModal(false);
+    addEmailToPrivateChat();
+    setEmailToInvite("");
+  };
   const handleShowInviteFriendsModal = (room) => {
+
     console.log(room)
     setRoomToInviteTo(room)
     handleInviteFriends()
@@ -151,16 +155,17 @@ const HomeScreen = () => {
 
   const addEmailToPrivateChat = async () => {
     try {
+
       await updateDoc(doc(db, "rooms", roomToInviteTo), {
         users: arrayUnion(emailToInvite),
       });
-      setEmailToInvite('')
-      setRoomToInviteTo('')
+      setEmailToInvite("");
+      setRoomToInviteTo("");
     } catch (e) {
       console.log(e.message);
     }
-  }
 
+  }
   const handleAddFavorite = async (collection) => {
     try {
       await updateDoc(doc(db, "rooms", collection), {
@@ -199,7 +204,6 @@ const HomeScreen = () => {
         primaryColor='#403d39'
       />
       <View>
-
         <View style={styles.inputContainer}>
           {displayModal && (
             <CreateChatRoomModal
@@ -210,16 +214,20 @@ const HomeScreen = () => {
               setChatName={setChatName}
               setDescription={setDescription}
               setIsPublic={setIsPublic}
+
               handleCreateChat={handleCreateChat} />
           )
           }
           {displayInviteFriendsModal &&
+
             <InviteFriendsModal
               displayInviteFriendsModal={displayInviteFriendsModal}
               setDisplayInviteFriendsModal={setDisplayInviteFriendsModal}
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
+
               handleInviteFriends={handleInviteFriends} />}
+
         </View>
       </View>
       <View style={styles.container}>
@@ -233,6 +241,7 @@ const HomeScreen = () => {
               isPublic={obj.isPublic}
               handleShowInviteFriendsModal={handleShowInviteFriendsModal}
               handleAddFavorite={handleAddFavorite} />
+
           ))}
         </ScrollView>
       </View>

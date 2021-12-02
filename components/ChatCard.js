@@ -32,7 +32,7 @@ export default function ChatCard({ userName, collection, description }) {
             marginRight: 0,
             marginBottom: 0,
           }}
-          title='VIEW NOW'
+          title='Enter Chat'
         />
       </Card>
     </View>

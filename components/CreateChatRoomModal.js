@@ -22,7 +22,7 @@ export default function CreateChatRoomModal({ displayModal, setDisplayModal, cha
                                     <TextInput
                                         placeholder='Room Name'
                                         value={chatName}
-                                        onChangeText={setChatName}
+                                        onChangeText={text => setChatName(text)}
                                         style={styles.input}
                                     />
                                     <TextInput

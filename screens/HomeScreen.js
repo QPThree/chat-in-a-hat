@@ -74,7 +74,7 @@ const HomeScreen = () => {
         description: description,
         createdAt: new Date(),
       });
-      setRooms([...rooms, { description: description }]);
+      setRooms([...rooms, { description: description, id: chatName}]);
 
       setChatName("");
       navigation.navigate("ChatRoom", { collection: chatName });

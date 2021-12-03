@@ -44,6 +44,7 @@ const HomeScreen = () => {
   const [displayMenu, setDisplayMenu] = useState(false);
   const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
   const [displayChatMembersModal, setDisplayChatMembersModal] = useState(false);
+  const [selectedChatUsers, setSelectedChatUsers] = useState([]);
   const [emailToInvite, setEmailToInvite] = useState("");
   const [roomToInviteTo, setRoomToInviteTo] = useState("");
   const menuItems = [
@@ -75,11 +76,12 @@ const HomeScreen = () => {
     const fetchCollections = async () => {
       const queryPrivate = await getDocs(privateChats);
       const queryPublic = await getDocs(publicChats);
-      const queryFavorites = await getDocs(publicChats);
+      const queryFavorites = await getDocs(favoriteChats);
 
       const privateRooms = queryPrivate.docs.map((doc) => {
         let obj = {
           description: doc.data().description,
+          users: doc.data().users,
           id: doc.id,
           isPublic: false,
         };
@@ -172,8 +174,6 @@ const HomeScreen = () => {
       await updateDoc(doc(db, "rooms", collection), {
         favoritedBy: arrayUnion(auth.currentUser?.email),
       });
-      setEmailToInvite('')
-      setRoomToInviteTo('')
     } catch (e) {
       console.log(e.message);
     }
@@ -192,7 +192,11 @@ const HomeScreen = () => {
     setDisplayMenu(false)
   }
   const handleChatMemberModal = (room) => {
-    console.log(room)
+    console.log("ROOM:", room)
+    privateRooms.forEach(obj => console.log(obj.id))
+    const selectedRoom = privateRooms.filter(obj => obj.id === room)
+    const users = selectedRoom[0].users
+    setSelectedChatUsers(users)
     setDisplayChatMembersModal(true)
   }
 
@@ -231,10 +235,12 @@ const HomeScreen = () => {
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
               handleInviteFriends={handleInviteFriends} />}
+
           {displayChatMembersModal &&
             <ChatMembersModal 
             displayChatMembersModal={displayChatMembersModal}
-            setDisplayChatMembersModal={setDisplayChatMembersModal}/>
+            setDisplayChatMembersModal={setDisplayChatMembersModal}
+            users={selectedChatUsers}/>
           }
 
         </View>

@@ -11,14 +11,14 @@ import { Card, ListItem, Button, Chip, ButtonGroup } from "react-native-elements
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 
-export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal, handleAddFavorite }) {
+export default function ChatCard({ userName, collection, description, isPublic, handleShowInviteFriendsModal, handleAddFavorite, handleChatMemberModal }) {
   const navigation = useNavigation();
 
-  const FavoriteButton = () => <Button type="solid" icon={{ name: "star", color: "gold"}} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleAddFavorite(collection) }} />
-  const InviteButton = () => <Button type="solid" icon={{ name: "add", color: "green"}} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleShowInviteFriendsModal(collection) }} />
+  const FavoriteButton = () => <Button type="solid" icon={<Icon name= "thumbs-up" color = "orange" size={20}/>} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleAddFavorite(collection) }} />
+  const InviteButton = () => <Button type="solid" icon={<Icon name= "user-plus" color = "green" size={20}/>} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleShowInviteFriendsModal(collection) }} />
+  const MembersButton = () => <Button type="solid" icon={<Icon name= "users" color = "blue" size={20}/>} buttonStyle={{backgroundColor: '#FFF'}} onPress={() => { handleChatMemberModal(collection) }} />
 
-
-  const buttons = [{element:FavoriteButton}, {element: InviteButton}]
+  const buttons = [{element:FavoriteButton}, {element: InviteButton}, {element: MembersButton}]
   const publicRoomButtons=[{element:FavoriteButton},]
   return (
     <View>

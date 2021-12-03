@@ -1,32 +1,10 @@
 import React from 'react'
 import { StyleSheet, Text, View, Modal, SafeAreaView, FlatList, Button } from 'react-native'
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-export default function ChatMembersModal({ setDisplayChatMembersModal, displayChatMembersModal }) {
-    const DATA = [
-        {
-            id: 'bd7acbea-c1b1-46c2-aed5-3ad53abb28ba',
-            title: 'First Item',
-        },
-        {
-            id: '3ac68afc-c605-48d3-a4f8-fbd91aa97f63',
-            title: 'Second Item',
-        },
-        {
-            id: '58694a0f-3da1-471f-bd96-145571e29d72',
-            title: 'Third Item',
-        },
-    ];
+export default function ChatMembersModal({ setDisplayChatMembersModal, displayChatMembersModal, users }) {
 
-    const Item = ({ title }) => (
-        <View style={styles.item}>
-            <Text style={styles.title}>{title}</Text>
-        </View>
-    );
-
-    const renderItem = ({ item }) => (
-        <Item title={item.title} />
-    );
-
+    const DATA = users;
     return (
         <View style={styles.centeredView}>
             <Modal
@@ -39,22 +17,19 @@ export default function ChatMembersModal({ setDisplayChatMembersModal, displayCh
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <SafeAreaView style={styles.container}>
-                            <FlatList
-                                data={DATA}
-                                renderItem={renderItem}
-                                keyExtractor={item => item.id}
-                            />
+                            <Text style={styles.header}># User ({users.length}) </Text>
+                            {users.map((obj, indx) => <Text style={styles.emailText}id={indx}><Text style={{color: "#e9c46a"}}>{indx + 1}  </Text> {obj}</Text>)}
                             <View style={{ marginTop: 10 }}>
-                        <Button
-                            onPress={() => setDisplayChatMembersModal(!displayChatMembersModal)}
-                            title="Close"
-                            color="#780000"
-                        />
-                    </View>
+                                <Button
+                                    onPress={() => setDisplayChatMembersModal(!displayChatMembersModal)}
+                                    title="Close"
+                                    color="#780000"
+                                />
+                            </View>
                         </SafeAreaView>
-                        
+
                     </View>
-                    
+
                 </View>
 
             </Modal>
@@ -64,12 +39,12 @@ export default function ChatMembersModal({ setDisplayChatMembersModal, displayCh
 
 const styles = StyleSheet.create({
 
-    input: {
+    container: {
         borderWidth: 1,
         borderColor: '#777',
-        padding: 8,
+        padding: 12,
         margin: 10,
-        width: 200,
+        width: 250,
     },
     modalView: {
         margin: 20,
@@ -89,7 +64,6 @@ const styles = StyleSheet.create({
     },
     modalText: {
         marginBottom: 10,
-
     },
     centeredView: {
         flex: 0.5,
@@ -104,5 +78,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: "center",
         marginTop: 40,
+    },
+    header:{
+        borderBottomWidth: 1,
+        borderBottomColor:'black'
+    },
+    emailText: {
+        color:"#264653",
+        padding: 5,
+        margin:2,
+        fontWeight:"600",
+        fontFamily: "notoserif"
     },
 });

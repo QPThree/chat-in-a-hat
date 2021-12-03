@@ -30,6 +30,7 @@ import {
 import { setStatusBarBackgroundColor } from "expo-status-bar";
 import InviteFriendsModal from "../components/InviteFriendsModal";
 import { arrayUnion } from "@firebase/firestore";
+import ChatMembersModal from "../components/ChatMembersModal";
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
@@ -41,8 +42,8 @@ const HomeScreen = () => {
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
   const [displayMenu, setDisplayMenu] = useState(false);
-  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] =
-    useState(false);
+  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
+  const [displayChatMembersModal, setDisplayChatMembersModal] = useState(false);
   const [emailToInvite, setEmailToInvite] = useState("");
   const [roomToInviteTo, setRoomToInviteTo] = useState("");
   const menuItems = [
@@ -190,6 +191,10 @@ const HomeScreen = () => {
     setRooms(usersFavorites)
     setDisplayMenu(false)
   }
+  const handleChatMemberModal = (room) => {
+    console.log(room)
+    setDisplayChatMembersModal(true)
+  }
 
 
   return (
@@ -225,8 +230,12 @@ const HomeScreen = () => {
               setDisplayInviteFriendsModal={setDisplayInviteFriendsModal}
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
-
               handleInviteFriends={handleInviteFriends} />}
+          {displayChatMembersModal &&
+            <ChatMembersModal 
+            displayChatMembersModal={displayChatMembersModal}
+            setDisplayChatMembersModal={setDisplayChatMembersModal}/>
+          }
 
         </View>
       </View>
@@ -240,7 +249,9 @@ const HomeScreen = () => {
               description={obj.description}
               isPublic={obj.isPublic}
               handleShowInviteFriendsModal={handleShowInviteFriendsModal}
-              handleAddFavorite={handleAddFavorite} />
+              handleAddFavorite={handleAddFavorite}
+              handleChatMemberModal={handleChatMemberModal}
+               />
 
           ))}
         </ScrollView>

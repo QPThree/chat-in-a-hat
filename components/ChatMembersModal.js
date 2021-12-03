@@ -17,7 +17,8 @@ export default function ChatMembersModal({ setDisplayChatMembersModal, displayCh
                 <View style={styles.centeredView}>
                     <View style={styles.modalView}>
                         <SafeAreaView style={styles.container}>
-                            {users.map((obj, indx) => <Text id={indx}>{obj}</Text>)}
+                            <Text style={styles.header}># User ({users.length}) </Text>
+                            {users.map((obj, indx) => <Text style={styles.emailText}id={indx}><Text style={{color: "#e9c46a"}}>{indx + 1}  </Text> {obj}</Text>)}
                             <View style={{ marginTop: 10 }}>
                                 <Button
                                     onPress={() => setDisplayChatMembersModal(!displayChatMembersModal)}
@@ -38,12 +39,12 @@ export default function ChatMembersModal({ setDisplayChatMembersModal, displayCh
 
 const styles = StyleSheet.create({
 
-    input: {
+    container: {
         borderWidth: 1,
         borderColor: '#777',
-        padding: 8,
+        padding: 12,
         margin: 10,
-        width: 200,
+        width: 250,
     },
     modalView: {
         margin: 20,
@@ -63,7 +64,6 @@ const styles = StyleSheet.create({
     },
     modalText: {
         marginBottom: 10,
-
     },
     centeredView: {
         flex: 0.5,
@@ -78,5 +78,16 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: "center",
         marginTop: 40,
+    },
+    header:{
+        borderBottomWidth: 1,
+        borderBottomColor:'black'
+    },
+    emailText: {
+        color:"#264653",
+        padding: 5,
+        margin:2,
+        fontWeight:"600",
+        fontFamily: "notoserif"
     },
 });

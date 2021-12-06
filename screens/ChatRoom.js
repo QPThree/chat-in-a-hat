@@ -1,4 +1,9 @@
-import React, { useLayoutEffect, useState, useCallback } from "react";
+import React, {
+  useLayoutEffect,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { GiftedChat, Bubble } from "react-native-gifted-chat";
 import {
@@ -10,6 +15,8 @@ import {
   orderBy,
   query,
 } from "../firebase";
+
+import io from "socket.io-client";
 
 const getColor = (username) => {
   let sumChars = 0;
@@ -30,7 +37,9 @@ const getColor = (username) => {
 };
 
 const ChatRoom = ({ route }) => {
+  const socket = io("http://10.142.237.6:8000/");
   const [messages, setMessages] = useState([]);
+  const [test, setTest] = useState("");
 
   useLayoutEffect(() => {
     const q = query(
@@ -53,6 +62,10 @@ const ChatRoom = ({ route }) => {
     return unsubscribe;
   }, [route.params.collection]);
 
+  // useEffect(() => {
+
+  // }, []);
+
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
       GiftedChat.append(previousMessages, messages)
@@ -64,6 +77,7 @@ const ChatRoom = ({ route }) => {
       text,
       user,
     });
+    socket.emit("chat message", { _id, createdAt, text, user });
   }, []);
 
   // if (messages.length < 1) {
@@ -73,8 +87,6 @@ const ChatRoom = ({ route }) => {
   const renderBubble = (props) => {
     let username = props.currentMessage.user.name;
     let color = getColor(username ? username : "gray");
-
-    console.log(username);
     return (
       <Bubble
         {...props}

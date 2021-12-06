@@ -34,26 +34,25 @@ import ChatMembersModal from "../components/ChatMembersModal";
 
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
-  const [allRooms, setAllRooms] = useState([])
-  const [privateRooms, setPrivateRooms] = useState([])
-  const [usersFavorites, setUsersFavorites] = useState([])
-  const [chatName, setChatName] = useState("")
+  const [allRooms, setAllRooms] = useState([]);
+  const [privateRooms, setPrivateRooms] = useState([]);
+  const [usersFavorites, setUsersFavorites] = useState([]);
+  const [chatName, setChatName] = useState("");
   const [displayModal, setDisplayModal] = useState(false);
   const [isPublic, setIsPublic] = useState(true);
   const [description, setDescription] = useState("");
   const [displayMenu, setDisplayMenu] = useState(false);
-  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] = useState(false);
+  const [displayInviteFriendsModal, setDisplayInviteFriendsModal] =
+    useState(false);
   const [displayChatMembersModal, setDisplayChatMembersModal] = useState(false);
   const [emailToInvite, setEmailToInvite] = useState("");
   const [roomToInviteTo, setRoomToInviteTo] = useState("");
   const menuItems = [
-
-
-    { label: 'New Room', onPress: () => handleShowModal() },
+    { label: "New Room", onPress: () => handleShowModal() },
     { label: "Private Chats", onPress: () => displayPrivateRooms() },
     { label: "All Chats", onPress: () => displayAllRooms() },
-    { label: "Favorites", onPress: () => displayFavoriteRooms() },];
-
+    { label: "Favorites", onPress: () => displayFavoriteRooms() },
+  ];
 
   const navigation = useNavigation();
 
@@ -101,18 +100,15 @@ const HomeScreen = () => {
           isPublic: true,
         };
         return obj;
-      })
+      });
 
       setRooms([...privateRooms, ...publicRooms]);
-      setAllRooms([...privateRooms, ...publicRooms])
-      setPrivateRooms(privateRooms)
-      setUsersFavorites(favoriteRooms)
-
+      setAllRooms([...privateRooms, ...publicRooms]);
+      setPrivateRooms(privateRooms);
+      setUsersFavorites(favoriteRooms);
     };
     fetchCollections();
   }, []);
-
-
 
   const handleCreateChat = async () => {
     try {
@@ -124,9 +120,15 @@ const HomeScreen = () => {
         createdAt: new Date(),
       });
 
-
-      setRooms([...rooms, { isPublic: isPublic, collection: chatName, description: description, id: chatName }]);
-
+      setRooms([
+        ...rooms,
+        {
+          isPublic: isPublic,
+          collection: chatName,
+          description: description,
+          id: chatName,
+        },
+      ]);
 
       navigation.navigate("ChatRoom", { collection: chatName });
       setChatName("");
@@ -146,17 +148,15 @@ const HomeScreen = () => {
     setEmailToInvite("");
   };
   const handleShowInviteFriendsModal = (room) => {
-
-    console.log(room)
-    setRoomToInviteTo(room)
-    handleInviteFriends()
-    setDisplayInviteFriendsModal(true)
-    setDisplayMenu(false)
-  }
+    console.log(room);
+    setRoomToInviteTo(room);
+    handleInviteFriends();
+    setDisplayInviteFriendsModal(true);
+    setDisplayMenu(false);
+  };
 
   const addEmailToPrivateChat = async () => {
     try {
-
       await updateDoc(doc(db, "rooms", roomToInviteTo), {
         users: arrayUnion(emailToInvite),
       });
@@ -165,37 +165,35 @@ const HomeScreen = () => {
     } catch (e) {
       console.log(e.message);
     }
-
-  }
+  };
   const handleAddFavorite = async (collection) => {
     try {
       await updateDoc(doc(db, "rooms", collection), {
         favoritedBy: arrayUnion(auth.currentUser?.email),
       });
-      setEmailToInvite('')
-      setRoomToInviteTo('')
+      setEmailToInvite("");
+      setRoomToInviteTo("");
     } catch (e) {
       console.log(e.message);
     }
-  }
+  };
 
   const displayPrivateRooms = () => {
-    setRooms(privateRooms)
-    setDisplayMenu(false)
-  }
+    setRooms(privateRooms);
+    setDisplayMenu(false);
+  };
   const displayAllRooms = () => {
-    setRooms(allRooms)
-    setDisplayMenu(false)
-  }
+    setRooms(allRooms);
+    setDisplayMenu(false);
+  };
   const displayFavoriteRooms = async () => {
-    setRooms(usersFavorites)
-    setDisplayMenu(false)
-  }
+    setRooms(usersFavorites);
+    setDisplayMenu(false);
+  };
   const handleChatMemberModal = (room) => {
-    console.log(room)
-    setDisplayChatMembersModal(true)
-  }
-
+    console.log(room);
+    setDisplayChatMembersModal(true);
+  };
 
   return (
     <>
@@ -219,24 +217,24 @@ const HomeScreen = () => {
               setChatName={setChatName}
               setDescription={setDescription}
               setIsPublic={setIsPublic}
-
-              handleCreateChat={handleCreateChat} />
-          )
-          }
-          {displayInviteFriendsModal &&
-
+              handleCreateChat={handleCreateChat}
+            />
+          )}
+          {displayInviteFriendsModal && (
             <InviteFriendsModal
               displayInviteFriendsModal={displayInviteFriendsModal}
               setDisplayInviteFriendsModal={setDisplayInviteFriendsModal}
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
-              handleInviteFriends={handleInviteFriends} />}
-          {displayChatMembersModal &&
-            <ChatMembersModal 
-            displayChatMembersModal={displayChatMembersModal}
-            setDisplayChatMembersModal={setDisplayChatMembersModal}/>
-          }
-
+              handleInviteFriends={handleInviteFriends}
+            />
+          )}
+          {displayChatMembersModal && (
+            <ChatMembersModal
+              displayChatMembersModal={displayChatMembersModal}
+              setDisplayChatMembersModal={setDisplayChatMembersModal}
+            />
+          )}
         </View>
       </View>
       <View style={styles.container}>
@@ -251,8 +249,7 @@ const HomeScreen = () => {
               handleShowInviteFriendsModal={handleShowInviteFriendsModal}
               handleAddFavorite={handleAddFavorite}
               handleChatMemberModal={handleChatMemberModal}
-               />
-
+            />
           ))}
         </ScrollView>
       </View>

@@ -27,6 +27,7 @@ export default function App() {
         setIsSignedIn(false);
       }
     });
+
     return unsubscribe;
   }, []);
 

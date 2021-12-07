@@ -36,8 +36,8 @@ export default function CreateChatRoomModal({ displayModal, setDisplayModal, cha
                                     <Picker
                                         style={{ height: 50, width: 150 }}
                                         onValueChange={(itemValue) => setIsPublic(itemValue)}>
-                                        <Picker.Item label="Public" value="True" />
-                                        <Picker.Item label="Private" value="False" />
+                                        <Picker.Item label="Public" value={true} />
+                                        <Picker.Item label="Private" value={false} />
                                     </Picker>
                                 </View>
                                 <Button

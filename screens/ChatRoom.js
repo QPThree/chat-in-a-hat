@@ -17,6 +17,7 @@ import {
 } from "../firebase";
 
 import io from "socket.io-client";
+import axios from "axios";
 
 const getColor = (username) => {
   let sumChars = 0;
@@ -37,50 +38,68 @@ const getColor = (username) => {
 };
 
 const ChatRoom = ({ route }) => {
-  const socket = io("http://10.142.237.6:8000/");
+  let socket;
+
   const [messages, setMessages] = useState([]);
-  const [test, setTest] = useState("");
+  // const [id, setId] = useState(route.params._id);
 
   useLayoutEffect(() => {
-    const q = query(
-      collection(db, "rooms", route.params.collection, "messages"),
-      orderBy("createdAt", "desc")
-    );
-    const unsubscribe = onSnapshot(q, (querySnapShot) => {
-      setMessages(
-        querySnapShot.docs.map((chat) => {
-          let doc = {
-            _id: chat.data()._id,
-            createdAt: chat.data().createdAt.toDate(),
-            text: chat.data().text,
-            user: chat.data().user,
-          };
-          return doc;
-        })
+    socket = io(`http://192.168.3.246:8000/`);
+    socket.emit("join", { query: { chatRoom: route.params._id } });
+    axios
+      .get(`http://192.168.3.246:8000/room/${route.params._id}`)
+      .then((result) => setMessages(result.data.messages));
+    // const q = query(
+    //   collection(db, "rooms", route.params.collection, "messages"),
+    //   orderBy("createdAt", "desc")
+    // );
+    socket?.on("new message", (message) => {
+      console.log("NEW MESSAGE HIT", message);
+      console.log("IM IN ROOM: ", route.params._id);
+      setMessages([...messages, message]);
+    });
+    // const unsubscribe = onSnapshot(q, (querySnapShot) => {
+    //   setMessages(
+    //     querySnapShot.docs.map((chat) => {
+    //       let doc = {
+    //         _id: chat.data()._id,
+    //         createdAt: chat.data().createdAt.toDate(),
+    //         text: chat.data().text,
+    //         user: chat.data().user,
+    //       };
+    //       return doc;
+    //     })
+    //   );
+    // });
+    return () => {
+      socket.emit("cleanup", { query: { chatRoom: route.params._id } });
+    };
+  }, [route.params._id]);
+
+  const onSend = useCallback(
+    (messages = []) => {
+      setMessages((previousMessages) =>
+        GiftedChat.append(previousMessages, messages)
       );
-    });
-    return unsubscribe;
-  }, [route.params.collection]);
+      const { _id, createdAt, text, user } = messages[0];
+      addDoc(collection(db, "rooms", route.params.collection, "messages"), {
+        _id,
+        createdAt,
+        text,
+        user,
+      });
+      socket.emit("chat message", {
+        ChatRoomID: route.params._id,
+        _id,
+        createdAt,
+        text,
+        user,
+      });
+    },
+    [route.params._id]
+  );
 
-  // useEffect(() => {
-
-  // }, []);
-
-  const onSend = useCallback((messages = []) => {
-    setMessages((previousMessages) =>
-      GiftedChat.append(previousMessages, messages)
-    );
-    const { _id, createdAt, text, user } = messages[0];
-    addDoc(collection(db, "rooms", route.params.collection, "messages"), {
-      _id,
-      createdAt,
-      text,
-      user,
-    });
-    socket.emit("chat message", { _id, createdAt, text, user });
-  }, []);
-
-  // if (messages.length < 1) {
+  // if (messages.length < 1) {xs
   //   return <Text>LOADING</Text>;
   // }
 
@@ -129,6 +148,7 @@ const ChatRoom = ({ route }) => {
       onSend={(messages) => onSend(messages)}
       user={{
         _id: auth?.currentUser?.email,
+        email: auth?.currentUser?.email,
         name: auth?.currentUser?.displayName,
         avatar: auth?.currentUser?.photoURL,
       }}

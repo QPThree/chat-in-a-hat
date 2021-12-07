@@ -12,3 +12,9 @@ web-build/
 
 # macOS
 .DS_Store
+
+<<<<<<< HEAD
+=======
+
+>>>>>>> 39cdc8bed52535d7903a6f58981bffdf6dbb96fc
+.env

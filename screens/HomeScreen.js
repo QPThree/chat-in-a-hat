@@ -32,6 +32,9 @@ import InviteFriendsModal from "../components/InviteFriendsModal";
 import { arrayUnion } from "@firebase/firestore";
 import ChatMembersModal from "../components/ChatMembersModal";
 
+import axios from "axios";
+
+
 const HomeScreen = () => {
   const [rooms, setRooms] = useState([]);
   const [allRooms, setAllRooms] = useState([]);
@@ -73,54 +76,59 @@ const HomeScreen = () => {
     );
 
     const fetchCollections = async () => {
-      const queryPrivate = await getDocs(privateChats);
-      const queryPublic = await getDocs(publicChats);
-      const queryFavorites = await getDocs(favoriteChats);
+      // const queryPrivate = await getDocs(privateChats);
+      // const queryPublic = await getDocs(publicChats);
+      // const queryFavorites = await getDocs(favoriteChats);
 
-      const privateRooms = queryPrivate.docs.map((doc) => {
-        let obj = {
-          description: doc.data().description,
-          users: doc.data().users,
-          id: doc.id,
-          isPublic: false,
-        };
-        return obj;
-      });
+      // const privateRooms = queryPrivate.docs.map((doc) => {
+      //   let obj = {
+      //     description: doc.data().description,
+      //     users: doc.data().users,
+      //     id: doc.id,
+      //     isPublic: false,
+      //   };
+      //   return obj;
+      // });
 
-      const publicRooms = queryPublic.docs.map((doc) => {
-        let obj = {
-          description: doc.data().description,
-          id: doc.id,
-          isPublic: true,
-        };
-        return obj;
-      });
-      const favoriteRooms = queryFavorites.docs.map((doc) => {
-        let obj = {
-          description: doc.data().description,
-          id: doc.id,
-          isPublic: true,
-        };
-        return obj;
-      });
+      // const publicRooms = queryPublic.docs.map((doc) => {
+      //   let obj = {
+      //     description: doc.data().description,
+      //     id: doc.id,
+      //     isPublic: true,
+      //   };
+      //   return obj;
+      // });
+      // const favoriteRooms = queryFavorites.docs.map((doc) => {
+      //   let obj = {
+      //     description: doc.data().description,
+      //     id: doc.id,
+      //     isPublic: true,
+      //   };
+      //   return obj;
+      // });
+      console.log("ABOUT TO ASK SERVER")
+      const mongoResults = await axios.get(`http://10.135.209.204:8000/${auth.currentUser.email}`)
+      console.log("SERVER RESULT", mongoResults)
+      const {publicDb, userInPrivateRoomDb} = mongoResults.data;
+      setRooms([...userInPrivateRoomDb, ...publicDb]);
+      setAllRooms([...userInPrivateRoomDb, ...publicDb]);
+      setPrivateRooms(userInPrivateRoomDb);
+      // setUsersFavorites(favoriteRooms);
 
-      setRooms([...privateRooms, ...publicRooms]);
-      setAllRooms([...privateRooms, ...publicRooms]);
-      setPrivateRooms(privateRooms);
-      setUsersFavorites(favoriteRooms);
+
     };
     fetchCollections();
   }, []);
 
   const handleCreateChat = async () => {
     try {
-      await setDoc(doc(db, "rooms", chatName), {
-        users: [auth.currentUser?.email],
-        favoritedBy: [],
-        public: isPublic,
-        description: description,
-        createdAt: new Date(),
-      });
+      // await setDoc(doc(db, "rooms", chatName), {
+      //   users: [auth.currentUser?.email],
+      //   favoritedBy: [],
+      //   public: isPublic,
+      //   description: description,
+      //   createdAt: new Date(),
+      // });
 
       setRooms([
         ...rooms,
@@ -131,13 +139,22 @@ const HomeScreen = () => {
           id: chatName,
         },
       ]);
-
+      
+      const result = await axios.post(`http://10.135.209.204:8000/create`, {
+        name: chatName,
+        isPublic: isPublic,
+        description: description,
+        users:[auth.currentUser?.email],
+      })
+      console.log(result.data)
       navigation.navigate("ChatRoom", { collection: chatName });
+
       setChatName("");
     } catch (e) {
-      console.log(e.message);
+      console.log(e);
     }
   };
+
 
   const handleShowModal = () => {
     setDisplayModal(true);
@@ -236,13 +253,13 @@ const HomeScreen = () => {
               emailToInvite={emailToInvite}
               setEmailToInvite={setEmailToInvite}
 
-              handleInviteFriends={handleInviteFriends} />}
+              handleInviteFriends={handleInviteFriends} />)}
 
           {displayChatMembersModal &&
-            <ChatMembersModal 
-            displayChatMembersModal={displayChatMembersModal}
-            setDisplayChatMembersModal={setDisplayChatMembersModal}
-            users={selectedChatUsers}/>
+            <ChatMembersModal
+              displayChatMembersModal={displayChatMembersModal}
+              setDisplayChatMembersModal={setDisplayChatMembersModal}
+              users={selectedChatUsers} />
           }
 
         </View>
@@ -251,9 +268,10 @@ const HomeScreen = () => {
         <ScrollView>
           {rooms.map((obj) => (
             <Card
-              key={obj.id}
+              key={obj._id}
+              _id={obj._id}
               userName={auth.currentUser?.email}
-              collection={obj.id}
+              collection={obj.name}
               description={obj.description}
               isPublic={obj.isPublic}
               handleShowInviteFriendsModal={handleShowInviteFriendsModal}

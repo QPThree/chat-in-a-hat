@@ -17,6 +17,8 @@ import {
 } from "../firebase";
 
 import io from "socket.io-client";
+import axios from 'axios'
+
 
 const getColor = (username) => {
   let sumChars = 0;
@@ -37,34 +39,51 @@ const getColor = (username) => {
 };
 
 const ChatRoom = ({ route }) => {
-  const socket = io("http://10.142.237.6:8000/");
+  let socket;
+ 
   const [messages, setMessages] = useState([]);
   const [test, setTest] = useState("");
+  
+
+  
 
   useLayoutEffect(() => {
-    const q = query(
-      collection(db, "rooms", route.params.collection, "messages"),
-      orderBy("createdAt", "desc")
-    );
-    const unsubscribe = onSnapshot(q, (querySnapShot) => {
-      setMessages(
-        querySnapShot.docs.map((chat) => {
-          let doc = {
-            _id: chat.data()._id,
-            createdAt: chat.data().createdAt.toDate(),
-            text: chat.data().text,
-            user: chat.data().user,
-          };
-          return doc;
-        })
-      );
-    });
-    return unsubscribe;
-  }, [route.params.collection]);
+    console.log("ID BEGINNING OF LAYOUT EFFECT",route.params._id)
+    socket = io(`http://10.135.209.204:8000/`, {query:{"chatROOM": route.params._id}});
+
+   
+
+    axios.get(`http://10.135.209.204:8000/room/${route.params._id}`).then(result => setMessages(result.data.messages))
+    // const q = query(
+    //   collection(db, "rooms", route.params.collection, "messages"),
+    //   orderBy("createdAt", "desc")
+    // );
+
+    socket?.on('new message', (message) => {
+      console.log("NEW MESSAGE HIT")
+      setMessages([...messages, message])
+    })
+
+    // const unsubscribe = onSnapshot(q, (querySnapShot) => {
+    //   setMessages(
+    //     querySnapShot.docs.map((chat) => {
+    //       let doc = {
+    //         _id: chat.data()._id,
+    //         createdAt: chat.data().createdAt.toDate(),
+    //         text: chat.data().text,
+    //         user: chat.data().user,
+    //       };
+    //       return doc;
+    //     })
+    //   );
+    // });
+    // return unsubscribe;
+  }, [route.params._id]);
 
   // useEffect(() => {
 
   // }, []);
+ 
 
   const onSend = useCallback((messages = []) => {
     setMessages((previousMessages) =>
@@ -77,10 +96,11 @@ const ChatRoom = ({ route }) => {
       text,
       user,
     });
-    socket.emit("chat message", { _id, createdAt, text, user });
+    console.log("ROUTEPARAMSID", route.params._id)
+    socket.emit("chat message", { "ChatRoomID": route.params._id, _id, createdAt, text, user });
   }, []);
 
-  // if (messages.length < 1) {
+  // if (messages.length < 1) {xs
   //   return <Text>LOADING</Text>;
   // }
 
@@ -129,6 +149,7 @@ const ChatRoom = ({ route }) => {
       onSend={(messages) => onSend(messages)}
       user={{
         _id: auth?.currentUser?.email,
+        email: auth?.currentUser?.email,
         name: auth?.currentUser?.displayName,
         avatar: auth?.currentUser?.photoURL,
       }}

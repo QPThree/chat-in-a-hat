@@ -18,6 +18,7 @@ import Icon from "react-native-vector-icons/FontAwesome";
 
 export default function ChatCard({
   userName,
+  _id,
   collection,
   description,
   isPublic,
@@ -79,7 +80,7 @@ export default function ChatCard({
           raised
           icon={<Icon name='code' color='#ffffff' />}
           onPress={() =>
-            navigation.navigate("ChatRoom", { collection: collection })
+            navigation.navigate("ChatRoom", { collection: collection, _id: _id})
           }
           buttonStyle={{
             borderRadius: 0,
